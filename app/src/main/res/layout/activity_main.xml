@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/codeEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your code here"
+        android:minLines="10"
+        android:gravity="top"
+        android:padding="15dp"
+        android:layout_marginBottom="8dp"
+        android:textSize="20dp"
+        android:background="@drawable/edittext_custom_shape" />
+
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:backgroundTint="#2196F3"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_gravity="end" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/codePieceTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Response will appear here"
+            android:textSize="18sp"
+            android:layout_marginTop="40dp"/>
+    </ScrollView>
+</LinearLayout>

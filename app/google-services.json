@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "451395202468",
+    "project_id": "codepiece-ed720",
+    "storage_bucket": "codepiece-ed720.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:451395202468:android:9e5f121029ba6f7a1e2531",
+        "android_client_info": {
+          "package_name": "com.example.codepiece"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "451395202468-qmrt0uhcjpov2g1qh4u421d020c0ru4l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.codepiece",
+            "certificate_hash": "ee39e43978d3610a263ded22339160d660aa313c"
+          }
+        },
+        {
+          "client_id": "451395202468-v3vinm1rnlv9ie4rmh6raocfngvvetb6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASA2pRjSE2AaIfTsmtIGIqZ4HAYyHy8WI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "451395202468-v3vinm1rnlv9ie4rmh6raocfngvvetb6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
