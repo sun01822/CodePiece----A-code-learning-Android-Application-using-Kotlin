@@ -34,8 +34,8 @@ class CustomSpinnerAdapter(context: Context, private val languages: Array<String
         when (getItem(position)) {
             "c" -> languageImage.setImageResource(R.drawable.c)
             "cpp" -> languageImage.setImageResource(R.drawable.cpp)
-            "python3" -> languageImage.setImageResource(R.drawable.java)
-            "java" -> languageImage.setImageResource(R.drawable.python)
+            "python3" -> languageImage.setImageResource(R.drawable.python)
+            "java" -> languageImage.setImageResource(R.drawable.java)
             // Add more cases for other languages
         }
 

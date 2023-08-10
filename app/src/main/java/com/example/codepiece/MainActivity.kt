@@ -1,29 +1,32 @@
 package com.example.codepiece
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.example.codepiece.adapter.CustomSpinnerAdapter
-import com.example.codepiece.api.ApiService
-import com.example.codepiece.models.CodeCompilerRequest
+import com.example.codepiece.helper.ApiHelper
+import com.google.android.material.navigation.NavigationView
 import com.example.codepiece.models.CodeCompilerResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var codeEditText: EditText
+    private lateinit var inputEditText: EditText
     private lateinit var submitButton: Button
     private lateinit var codePieceTextView: TextView
     private lateinit var spinner: Spinner
     private lateinit var selectedLanguage: String
-
-    private val BASE_URL = "https://online-code-compiler.p.rapidapi.com/"
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+    private lateinit var toggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +34,13 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize UI components
         codeEditText = findViewById(R.id.codeEditText)
+        inputEditText = findViewById(R.id.inputEditText)
         submitButton = findViewById(R.id.submitButton)
         codePieceTextView = findViewById(R.id.codePieceTextView)
         spinner = findViewById(R.id.languageSpinner) // Get reference to the Spinner
+        drawerLayout = findViewById(R.id.drawerLayout)
+        navigationView = findViewById(R.id.navigationView)
+
         val languages = arrayOf("c", "cpp", "python3", "java")
 
         // Initialize Spinner adapter
@@ -54,20 +61,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val apiService = retrofit.create(ApiService::class.java)
-
         submitButton.setOnClickListener {
             val rawCode = codeEditText.text.toString()
+            val input = inputEditText.text.toString()
             val originalCode = rawCode.trimIndent()
-            val request = CodeCompilerRequest(selectedLanguage, "latest", originalCode, null)
-
-            val call = apiService.compileCode(request)
-            call.enqueue(object : Callback<CodeCompilerResponse> {
+            ApiHelper.compileCode(selectedLanguage, originalCode, input, object : Callback<CodeCompilerResponse> {
                 @SuppressLint("SetTextI18n")
                 override fun onResponse(call: Call<CodeCompilerResponse>, response: Response<CodeCompilerResponse>) {
                     if (response.isSuccessful) {
@@ -85,6 +83,50 @@ class MainActivity : AppCompatActivity() {
                     codePieceTextView.text = "Error: ${t.message}"
                 }
             })
+        }
+
+
+        // Set up the ActionBarDrawerToggle
+        toggle = ActionBarDrawerToggle(
+            this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
+        toggle.syncState()
+
+        // Set the navigation drawer item click listener
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            // Handle navigation drawer item clicks here
+            when (menuItem.itemId) {
+                R.id.moreApps -> {
+                    // Handle item 1 click
+                    // Example: startActivity(Intent(this, Item1Activity::class.java))
+                }
+                R.id.rateUs -> {
+                    // Handle item 2 click
+                    // Example: startActivity(Intent(this, Item2Activity::class.java))
+                }
+                // Add more cases for other menu items
+            }
+            drawerLayout.closeDrawer(GravityCompat.START)
+            true
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (toggle.onOptionsItemSelected(item)) {
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
         }
     }
 }
