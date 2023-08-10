@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- nav_header.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    android:orientation="vertical"
+    android:background="@color/colorAccent">
+
+    <!-- Customize your header content here -->
+    <!-- For example, you can add an ImageView and TextView -->
+
+</LinearLayout>
