@@ -6,6 +6,9 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.RecyclerView
+import com.example.codepiece.adapter.ModuleAdapter
+import com.example.codepiece.data.ModuleItem
 import com.example.codepiece.databinding.ActivityMainBinding
 import com.example.codepiece.fragments.CompilerFragment
 import com.google.android.material.navigation.NavigationView
@@ -24,6 +27,29 @@ class MainActivity : AppCompatActivity() {
         // Initialize UI components
         drawerLayout = binding.drawerLayout
         navigationView = binding.navigationView
+
+        val moduleItems = listOf(
+            ModuleItem("Problems", R.drawable.c),
+            ModuleItem("Courses", R.drawable.c),
+            ModuleItem("Books", R.drawable.c),
+            ModuleItem("Compile Code", R.drawable.c),
+            ModuleItem("Join Lectures", R.drawable.c),
+            ModuleItem("Join Contest", R.drawable.c),
+            ModuleItem("Test Yourself", R.drawable.c),
+            ModuleItem("Blogs", R.drawable.c),
+            ModuleItem("DSA", R.drawable.c),
+            // Add more items as needed
+        )
+
+        val moduleAdapter = ModuleAdapter(this, moduleItems)
+        moduleAdapter.setOnclickListener(object : ModuleAdapter.OnClickListener {
+            override fun onClick(position: Int, moduleItem: ModuleItem) {
+                // Handle item click
+            }
+        })
+
+        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+        recyclerView.adapter = moduleAdapter
 
         // Set up the ActionBarDrawerToggle
         toggle = ActionBarDrawerToggle(
