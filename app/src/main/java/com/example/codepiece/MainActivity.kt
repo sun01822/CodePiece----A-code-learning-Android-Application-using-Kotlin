@@ -6,11 +6,14 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.codepiece.adapter.ModuleAdapter
 import com.example.codepiece.data.ModuleItem
 import com.example.codepiece.databinding.ActivityMainBinding
 import com.example.codepiece.fragments.CompilerFragment
+import com.example.codepiece.fragments.CoursesFragment
+import com.example.codepiece.fragments.ProblemsFragment
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -29,15 +32,15 @@ class MainActivity : AppCompatActivity() {
         navigationView = binding.navigationView
 
         val moduleItems = listOf(
-            ModuleItem("Problems", R.drawable.c),
-            ModuleItem("Courses", R.drawable.c),
-            ModuleItem("Books", R.drawable.c),
-            ModuleItem("Compile Code", R.drawable.c),
-            ModuleItem("Join Lectures", R.drawable.c),
-            ModuleItem("Join Contest", R.drawable.c),
-            ModuleItem("Test Yourself", R.drawable.c),
-            ModuleItem("Blogs", R.drawable.c),
-            ModuleItem("DSA", R.drawable.c),
+            ModuleItem("Problems", R.drawable.problems),
+            ModuleItem("Courses", R.drawable.courses),
+            ModuleItem("Books", R.drawable.books),
+            ModuleItem("Compile Code", R.drawable.compiler),
+            ModuleItem("Join Lectures", R.drawable.lectures),
+            ModuleItem("Join Contest", R.drawable.contest),
+            ModuleItem("Test Yourself", R.drawable.test),
+            ModuleItem("Blogs", R.drawable.blog),
+            ModuleItem("DSA", R.drawable.dsa),
             // Add more items as needed
         )
 
@@ -45,6 +48,15 @@ class MainActivity : AppCompatActivity() {
         moduleAdapter.setOnclickListener(object : ModuleAdapter.OnClickListener {
             override fun onClick(position: Int, moduleItem: ModuleItem) {
                 // Handle item click
+                val fragment: Fragment = when (moduleItem.name) {
+                    "Problems" -> ProblemsFragment()
+                    "Courses" -> CoursesFragment()
+                    else -> {
+                        // Handle other cases or set to a default fragment if needed
+                        ProblemsFragment() // Replace with a default fragment or handle other cases
+                    }
+                }
+                navigateToFragment(fragment)
             }
         })
 
@@ -104,5 +116,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
+    }
+
+    private fun navigateToFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .addToBackStack(null) // Add to back stack for back navigation
+            .commit()
     }
 }
