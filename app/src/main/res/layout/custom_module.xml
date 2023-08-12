@@ -16,6 +16,7 @@
             android:id="@+id/item_image"
             android:layout_width="match_parent"
             android:layout_height="80dp"
+            android:layout_marginTop="10dp"
             android:src="@drawable/logo" />
 
         <TextView
@@ -26,7 +27,7 @@
             android:textAlignment="center"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:layout_margin="5dp"
+            android:layout_margin="8dp"
             android:textColor="@color/black"/>
 
     </LinearLayout>
