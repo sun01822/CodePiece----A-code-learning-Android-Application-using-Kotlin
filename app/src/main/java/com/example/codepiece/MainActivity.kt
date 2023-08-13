@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         toggle.syncState()
 
-        val fragment = CompilerFragment()
+        val fragment = ProblemsFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
             .commit()
