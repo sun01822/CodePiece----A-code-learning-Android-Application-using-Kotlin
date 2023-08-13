@@ -5,56 +5,64 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.codepiece.R
+import com.example.codepiece.adapter.ProblemsAdapter
+import com.example.codepiece.data.ProblemItem
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ProblemsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ProblemsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var problemsRecyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_problems, container, false)
-    }
+        val rootView = inflater.inflate(R.layout.fragment_problems, container, false)
+        problemsRecyclerView = rootView.findViewById(R.id.problemsRecyclerView)
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProblemsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProblemsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        // Create a list of ProblemItems (replace with your actual data)
+        val problemItems = listOf(
+            ProblemItem(
+                imageUrls = listOf("https://i.imgur.com/ssH8dte.jpg", "https://i.imgur.com/FtyhwyX.png", "https://i.imgur.com/5F0bfa0.png", "https://i.imgur.com/6GDJOai.png"),
+                title = "If Else Related Problems",
+                counterText = "10 Problems"
+            ),
+            ProblemItem(
+                imageUrls = listOf("https://i.imgur.com/ZKdWijl.png", "https://i.imgur.com/oWqu0Bs.png", "https://i.imgur.com/Zp4FDi3.jpg", "https://i.imgur.com/DQT5HhQ.png"),
+                title = "Array-String Related Problems",
+                counterText = "10 Problems"
+            ),
+            ProblemItem(
+                imageUrls = listOf("https://i.imgur.com/wEh67Lp.png", "https://i.imgur.com/OHwaNa6.jpg", "https://i.imgur.com/xpvIEfN.jpg", "https://i.imgur.com/zsPsk2A.jpg"),
+                title = "Function Related Problems",
+                counterText = "10 Problems"
+            ),
+            ProblemItem(
+                imageUrls = listOf("https://i.imgur.com/DM5FtKU.jpg", "https://i.imgur.com/uFwEk2L.jpg", "https://i.imgur.com/bmOzvPU.png", "https://i.imgur.com/SlCiZNa.png"),
+                title = "Loop Related Problems",
+                counterText = "10 Problems"
+            ),
+            ProblemItem(
+                imageUrls = listOf("https://i.imgur.com/vQbnCpO.png", "https://i.imgur.com/VtlgYes.png", "https://i.imgur.com/zpYZbjP.png", "https://i.imgur.com/AlUa7W2.gif"),
+                title = "Pointer Related Problems",
+                counterText = "10 Problems"
+            ),
+            ProblemItem(
+                imageUrls = listOf("https://i.imgur.com/rnCxHHK.jpg", "https://i.imgur.com/3iUTxWU.jpg", "https://i.imgur.com/q3aZvtY.jpg", "https://i.imgur.com/bR6INdX.jpg"),
+                title = "Pattern Related Problems",
+                counterText = "10 Problems"
+            ),
+            // Add more ProblemItems
+        )
+
+        // Create and set the ProblemsAdapter
+        val adapter = ProblemsAdapter(requireContext(), problemItems)
+        problemsRecyclerView.adapter = adapter
+
+        // Set the RecyclerView's layout manager and span count
+        problemsRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+
+        return rootView
     }
 }
