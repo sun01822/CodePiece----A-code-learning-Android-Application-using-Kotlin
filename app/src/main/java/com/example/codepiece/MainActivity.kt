@@ -72,10 +72,10 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         toggle.syncState()
 
-       /* val fragment = CompilerFragment()
+        val fragment = CompilerFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
-            .commit()*/
+            .commit()
 
         // Set the navigation drawer item click listener
         navigationView.setNavigationItemSelectedListener { menuItem ->
