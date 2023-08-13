@@ -1,15 +1,19 @@
 package com.example.codepiece.adapter
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.example.codepiece.R
 import com.example.codepiece.data.ProblemItem
 
@@ -23,6 +27,7 @@ class ProblemsAdapter(private val context: Context, private val problemItems: Li
         val problemImageView: ImageView = itemView.findViewById(R.id.problemImageView)
         val problemTitleTextView: TextView = itemView.findViewById(R.id.problemTitleTextView)
         val problemCounterTextView: TextView = itemView.findViewById(R.id.problemCounterTextView)
+        val imageProgressBar: ProgressBar = itemView.findViewById(R.id.imageProgressBar)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProblemViewHolder {
@@ -39,30 +44,65 @@ class ProblemsAdapter(private val context: Context, private val problemItems: Li
         holder.problemCounterTextView.text = currentItem.counterText
 
         // Implement image slider logic
-        startImageSlider(holder.problemImageView, currentItem.imageUrls)
+        startImageSlider(context, holder.problemImageView, currentItem.imageUrls, holder)
 
         holder.itemView.setOnClickListener {
             // Handle item click here
         }
     }
 
+
     override fun getItemCount(): Int {
         return problemItems.size
     }
+    companion object {
+        private const val IMAGE_SLIDER_INTERVAL = 3000L // Change image every 3 seconds
+    }
+    private fun startImageSlider(
+        context: Context,
+        imageView: ImageView,
+        imageUrls: List<String>,
+        holder: ProblemsAdapter.ProblemViewHolder
+    ) {
+        val handler = Handler(Looper.getMainLooper())
+        var currentItemPosition = 0
 
-    private fun startImageSlider(imageView: ImageView, imageUrls: List<String>) {
         handler.removeCallbacksAndMessages(null) // Remove any existing callbacks
         val runnable = object : Runnable {
             override fun run() {
-                Glide.with(context).load(imageUrls[currentItemPosition]).into(imageView)
+                Glide.with(context)
+                    .load(imageUrls[currentItemPosition])
+                    .listener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any?,
+                            target: com.bumptech.glide.request.target.Target<Drawable>?,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            // Hide progress bar on image load failure
+                            holder.imageProgressBar.visibility = View.GONE
+                            return false
+                        }
+
+                        override fun onResourceReady(
+                            resource: Drawable?,
+                            model: Any?,
+                            target: com.bumptech.glide.request.target.Target<Drawable>?,
+                            dataSource: com.bumptech.glide.load.DataSource?,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            // Hide progress bar and show image on successful image load
+                            holder.imageProgressBar.visibility = View.GONE
+                            imageView.visibility = View.VISIBLE
+                            return false
+                        }
+                    })
+                    .into(imageView)
+
                 currentItemPosition = (currentItemPosition + 1) % imageUrls.size
                 handler.postDelayed(this, IMAGE_SLIDER_INTERVAL)
             }
         }
         handler.post(runnable)
-    }
-
-    companion object {
-        private const val IMAGE_SLIDER_INTERVAL = 3000L // Change image every 3 seconds
     }
 }

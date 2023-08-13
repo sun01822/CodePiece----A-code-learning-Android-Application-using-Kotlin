@@ -28,6 +28,31 @@ class ProblemsFragment : Fragment() {
                 title = "If Else Related Problems",
                 counterText = "10 Problems"
             ),
+            ProblemItem(
+                imageUrls = listOf("https://i.imgur.com/ZKdWijl.png", "https://i.imgur.com/oWqu0Bs.png", "https://i.imgur.com/Zp4FDi3.jpg", "https://i.imgur.com/DQT5HhQ.png"),
+                title = "Array-String Related Problems",
+                counterText = "10 Problems"
+            ),
+            ProblemItem(
+                imageUrls = listOf("https://i.imgur.com/wEh67Lp.png", "https://i.imgur.com/OHwaNa6.jpg", "https://i.imgur.com/xpvIEfN.jpg", "https://i.imgur.com/zsPsk2A.jpg"),
+                title = "Function Related Problems",
+                counterText = "10 Problems"
+            ),
+            ProblemItem(
+                imageUrls = listOf("https://i.imgur.com/DM5FtKU.jpg", "https://i.imgur.com/uFwEk2L.jpg", "https://i.imgur.com/bmOzvPU.png", "https://i.imgur.com/SlCiZNa.png"),
+                title = "Loop Related Problems",
+                counterText = "10 Problems"
+            ),
+            ProblemItem(
+                imageUrls = listOf("https://i.imgur.com/vQbnCpO.png", "https://i.imgur.com/VtlgYes.png", "https://i.imgur.com/zpYZbjP.png", "https://i.imgur.com/AlUa7W2.gif"),
+                title = "Pointer Related Problems",
+                counterText = "10 Problems"
+            ),
+            ProblemItem(
+                imageUrls = listOf("https://i.imgur.com/rnCxHHK.jpg", "https://i.imgur.com/3iUTxWU.jpg", "https://i.imgur.com/q3aZvtY.jpg", "https://i.imgur.com/bR6INdX.jpg"),
+                title = "Pattern Related Problems",
+                counterText = "10 Problems"
+            ),
             // Add more ProblemItems
         )
 
