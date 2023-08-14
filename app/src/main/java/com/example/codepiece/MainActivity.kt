@@ -14,6 +14,7 @@ import com.example.codepiece.data.ModuleItem
 import com.example.codepiece.databinding.ActivityMainBinding
 import com.example.codepiece.fragments.CompilerFragment
 import com.example.codepiece.fragments.CoursesFragment
+import com.example.codepiece.fragments.HomeFragment
 import com.example.codepiece.fragments.ProblemsFragment
 import com.google.android.material.navigation.NavigationView
 
@@ -32,40 +33,6 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = binding.drawerLayout
         navigationView = binding.navigationView
 
-        val moduleItems = listOf(
-            ModuleItem("Problems", R.drawable.problems),
-            ModuleItem("Courses", R.drawable.courses),
-            ModuleItem("Books", R.drawable.books),
-            ModuleItem("Compile Code", R.drawable.compiler),
-            ModuleItem("Join Lectures", R.drawable.lectures),
-            ModuleItem("Join Contest", R.drawable.contest),
-            ModuleItem("Test Yourself", R.drawable.test),
-            ModuleItem("Blogs", R.drawable.blog),
-            ModuleItem("DSA", R.drawable.dsa),
-            // Add more items as needed
-        )
-
-        val moduleAdapter = ModuleAdapter(this, moduleItems)
-        moduleAdapter.setOnclickListener(object : ModuleAdapter.OnClickListener {
-            override fun onClick(position: Int, moduleItem: ModuleItem) {
-                // Handle item click
-                val fragment: Fragment = when (moduleItem.name) {
-                    "Problems" -> ProblemsFragment()
-                    "Courses" -> CoursesFragment()
-                    "Compile Code" -> CompilerFragment()
-                    else -> {
-                        // Handle other cases or set to a default fragment if needed
-                        ProblemsFragment() // Replace with a default fragment or handle other cases
-                    }
-                }
-                binding.recyclerView.visibility = View.GONE
-                navigateToFragment(fragment)
-            }
-        })
-
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-        recyclerView.adapter = moduleAdapter
-
         // Set up the ActionBarDrawerToggle
         toggle = ActionBarDrawerToggle(
             this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close
@@ -75,10 +42,10 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         toggle.syncState()
 
-        /*val fragment = ProblemsFragment()
+        val fragment = HomeFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
-            .commit()*/
+            .commit()
 
         // Set the navigation drawer item click listener
         navigationView.setNavigationItemSelectedListener { menuItem ->
@@ -114,23 +81,17 @@ class MainActivity : AppCompatActivity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
+        // Find the current fragment
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             if (supportFragmentManager.backStackEntryCount > 0) {
                 // If there are fragments in the back stack, pop the back stack
                 supportFragmentManager.popBackStack()
-                binding.recyclerView.visibility = View.VISIBLE // Show the RecyclerView
             } else {
                 super.onBackPressed()
             }
         }
-    }
-
-    private fun navigateToFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, fragment)
-            .addToBackStack(null) // Add to back stack for back navigation
-            .commit()
     }
 }
