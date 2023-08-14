@@ -2,6 +2,7 @@ package com.example.codepiece.adapter
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
@@ -10,12 +11,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.example.codepiece.R
 import com.example.codepiece.data.ProblemItem
+import com.example.codepiece.fragments.SubProblemsFragment
 
 class ProblemsAdapter(private val context: Context, private val problemItems: List<ProblemItem>) :
     RecyclerView.Adapter<ProblemsAdapter.ProblemViewHolder>() {
@@ -48,9 +51,18 @@ class ProblemsAdapter(private val context: Context, private val problemItems: Li
 
         holder.itemView.setOnClickListener {
             // Handle item click here
+            val bundle = Bundle()
+            bundle.putString("problemName", currentItem.title) // Pass any data you need
+            val subProblemsFragment = SubProblemsFragment()
+            subProblemsFragment.arguments = bundle
+
+            val fragmentManager = (context as AppCompatActivity).supportFragmentManager
+            fragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, subProblemsFragment)
+                .addToBackStack(null)
+                .commit()
         }
     }
-
 
     override fun getItemCount(): Int {
         return problemItems.size

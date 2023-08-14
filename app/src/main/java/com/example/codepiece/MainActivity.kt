@@ -2,6 +2,7 @@ package com.example.codepiece
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -51,11 +52,13 @@ class MainActivity : AppCompatActivity() {
                 val fragment: Fragment = when (moduleItem.name) {
                     "Problems" -> ProblemsFragment()
                     "Courses" -> CoursesFragment()
+                    "Compile Code" -> CompilerFragment()
                     else -> {
                         // Handle other cases or set to a default fragment if needed
                         ProblemsFragment() // Replace with a default fragment or handle other cases
                     }
                 }
+                binding.recyclerView.visibility = View.GONE
                 navigateToFragment(fragment)
             }
         })
@@ -72,10 +75,10 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         toggle.syncState()
 
-        val fragment = CompilerFragment()
+        /*val fragment = ProblemsFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
-            .commit()
+            .commit()*/
 
         // Set the navigation drawer item click listener
         navigationView.setNavigationItemSelectedListener { menuItem ->
@@ -114,7 +117,13 @@ class MainActivity : AppCompatActivity() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
-            super.onBackPressed()
+            if (supportFragmentManager.backStackEntryCount > 0) {
+                // If there are fragments in the back stack, pop the back stack
+                supportFragmentManager.popBackStack()
+                binding.recyclerView.visibility = View.VISIBLE // Show the RecyclerView
+            } else {
+                super.onBackPressed()
+            }
         }
     }
 
