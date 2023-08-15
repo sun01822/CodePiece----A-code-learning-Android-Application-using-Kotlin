@@ -19,15 +19,15 @@ import com.google.firebase.firestore.QuerySnapshot
 class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener {
     private lateinit var binding: FragmentSubProblemsBinding
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private lateinit var problemName: String
+    private lateinit var problemType: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSubProblemsBinding.inflate(layoutInflater)
-        problemName = arguments?.getString("problemName").toString()
-        binding.textView.text = problemName
+        problemType = arguments?.getString("problemName").toString()
+        binding.textView.text = problemType
 
         // Initialize RecyclerView and set up the layout manager
         val recyclerView: RecyclerView = binding.subProblemsRecyclerView
@@ -38,11 +38,26 @@ class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener {
 
         // Fetch subProblems data from Firebase Firestore
         fetchSubProblemsData()
+
+        binding.addButton.setOnClickListener {
+            val bundle = Bundle().apply {
+                putString("problemType", problemType) // Only add problemType to the bundle
+            }
+
+            val loginFragment = LogInFragment()
+            loginFragment.arguments = bundle
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, loginFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+
         return binding.root
     }
 
     private fun fetchSubProblemsData() {
-        firestore.collection(problemName) // Replace with your collection name
+        firestore.collection(problemType) // Replace with your collection name
             .get()
             .addOnSuccessListener { querySnapshot: QuerySnapshot ->
                 val subProblems = mutableListOf<SubProblem>()
@@ -54,7 +69,17 @@ class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener {
                     val cppCode = document.getString("cppCode") ?: ""
                     val javaCode = document.getString("javaCode") ?: ""
                     val pythonCode = document.getString("pythonCode") ?: ""
-                    subProblems.add(SubProblem(problemNumber, problemName, problemAlgorithms, cprogramCode, cppCode, javaCode, pythonCode))
+                    subProblems.add(
+                        SubProblem(
+                            problemNumber,
+                            problemName,
+                            problemAlgorithms,
+                            cprogramCode,
+                            cppCode,
+                            javaCode,
+                            pythonCode
+                        )
+                    )
                 }
 
                 // Sort the subProblems list based on problemNumber
@@ -206,4 +231,5 @@ class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener {
             .addToBackStack(null)
             .commit()
     }
+
 }
