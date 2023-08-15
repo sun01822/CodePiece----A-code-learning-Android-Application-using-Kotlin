@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.codepiece.R
 import com.example.codepiece.data.SubProblem
 
-class SubProblemsAdapter(private val subProblems: List<SubProblem>) :
+class SubProblemsAdapter(private val subProblems: List<SubProblem>, private val listener: OnItemClickListener) :
     RecyclerView.Adapter<SubProblemsAdapter.SubProblemViewHolder>() {
 
     inner class SubProblemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -28,9 +28,18 @@ class SubProblemsAdapter(private val subProblems: List<SubProblem>) :
         // Bind data to views
         holder.problemNumberTextView.text = subProblem.problemNumber
         holder.problemNameTextView.text = subProblem.problemName
+
+        // Set click listener on the item view
+        holder.itemView.setOnClickListener {
+            listener.onItemClick(subProblem)
+        }
     }
 
     override fun getItemCount(): Int {
         return subProblems.size
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(subProblem: SubProblem)
     }
 }
