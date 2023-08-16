@@ -4,9 +4,22 @@
     android:layout_width="match_parent"
     android:layout_height="300dp"
     android:orientation="vertical"
-    android:background="@color/colorAccent">
+    android:background="@color/colorAccent"
+    android:gravity="center">
 
-    <!-- Customize your header content here -->
-    <!-- For example, you can add an ImageView and TextView -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:src="@drawable/logo"
+        android:layout_marginTop="20dp"
+        android:contentDescription="App Logo" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Code Piece Demo Version"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        />
 
 </LinearLayout>

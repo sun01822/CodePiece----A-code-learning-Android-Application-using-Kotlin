@@ -37,7 +37,7 @@ class DetailsScreenFragment : Fragment() {
             // Show a toast indicating code copied
             Toast.makeText(context, "Code copied to clipboard", Toast.LENGTH_SHORT).show()
         }
-
+        binding.changeThemeButton.setBackgroundResource(R.drawable.ic_theme)
         // Set click listener for the changeThemeButton
         binding.changeThemeButton.setOnClickListener {
             // Change the theme of the codeTextView
@@ -46,12 +46,12 @@ class DetailsScreenFragment : Fragment() {
                 binding.codeTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                 binding.codeCardView.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.black))
                 binding.copyCodeButton.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
-                binding.changeThemeButton.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
+                binding.changeThemeButton.setBackgroundResource(R.drawable.ic_dark)
             } else {
                 binding.codeTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
                 binding.codeCardView.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
                 binding.copyCodeButton.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
-                binding.changeThemeButton.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
+                binding.changeThemeButton.setBackgroundResource(R.drawable.ic_theme)
             }
         }
         return binding.root
