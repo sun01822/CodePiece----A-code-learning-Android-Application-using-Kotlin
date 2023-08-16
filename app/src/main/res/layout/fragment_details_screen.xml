@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -14,113 +15,171 @@
             android:id="@+id/problemNumberTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:textSize="18sp"/>
+            />
 
         <TextView
             android:id="@+id/problemNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/problemNumberTextView"
-            android:layout_marginTop="4dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:layout_alignBaseline="@id/problemNumberTextView"
+            android:layout_marginTop="8dp"
             android:layout_toEndOf="@id/problemNumberTextView"
-            android:layout_alignBaseline="@id/problemNumberTextView"/>
+            android:textSize="18sp"
+            android:paddingStart="4dp"
+            android:textStyle="bold"
+            tools:ignore="RtlSymmetry" />
+
+        <!-- Add Algorithm TextView -->
+        <TextView
+            android:id="@+id/algorithm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/problemNameTextView"
+            android:layout_marginTop="15dp"
+            android:text="Algorithm: "
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/problemAlgorithmsTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/problemNameTextView"
+            android:layout_below="@id/algorithm"
             android:layout_marginTop="8dp"
-            android:textSize="14sp"/>
+            android:textSize="14sp" />
 
         <LinearLayout
+            android:id="@+id/buttonLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/buttonLayout"
             android:layout_below="@id/problemAlgorithmsTextView"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/cButton"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="C"
                 android:layout_marginEnd="8dp"
-                style="?android:attr/buttonBarButtonStyle" />
+                android:text="C" />
 
             <Button
                 android:id="@+id/cppButton"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cpp"
                 android:layout_marginEnd="8dp"
-                style="?android:attr/buttonBarButtonStyle" />
+                android:text="Cpp" />
 
             <Button
                 android:id="@+id/javaButton"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Java"
                 android:layout_marginEnd="8dp"
-                style="?android:attr/buttonBarButtonStyle" />
+                android:text="Java" />
 
             <Button
                 android:id="@+id/pythonButton"
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Python"
-                style="?android:attr/buttonBarButtonStyle" />
+                android:text="Python" />
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/source"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/buttonLayout"
+            android:text="Source Code: "
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginTop="5dp" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/codeCardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/buttonLayout"
-            android:layout_marginTop="16dp"
+            android:layout_below="@+id/source"
+            android:layout_marginTop="10dp"
             android:elevation="10dp"
             android:padding="4dp"
             app:cardCornerRadius="15dp">
 
-            <TextView
-                android:id="@+id/codeTextView"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:padding="10dp"/>
+                android:orientation="vertical">
 
+                <!-- Buttons for copying code and changing theme -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/copyCodeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="4dp"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:contentDescription="Copy Button"
+                        android:src="@drawable/ic_copy" />
+
+                    <ImageButton
+                        android:id="@+id/changeThemeButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="4dp"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:contentDescription="Theme change button"
+                        android:src="@drawable/ic_theme" />
+                </LinearLayout>
+
+                <!-- TextView to show the code -->
+                <TextView
+                    android:id="@+id/codeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_below="@id/codeCardView"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/runButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Run"
-                android:backgroundTint="#36CC3C"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@color/colorAccent"
+                android:text="Try to Run" />
 
-            <TextView
-                android:id="@+id/outputTextView"
-                android:layout_width="wrap_content"
+            <!-- Add a Fragment container for replacing fragments -->
+            <FrameLayout
+                android:id="@+id/fragmentContainer2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="15dp"
-                android:text="Output: "/>
+                android:layout_marginTop="10dp" />
 
         </LinearLayout>
-
     </RelativeLayout>
 </ScrollView>
