@@ -1,5 +1,7 @@
 package com.example.codepiece
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -23,11 +25,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var shareContent: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        // sharing link
+        shareContent = "https://play.google.com/store/apps/details?id=com.example.codepiece"
 
         // Initialize UI components
         drawerLayout = binding.drawerLayout
@@ -51,10 +58,17 @@ class MainActivity : AppCompatActivity() {
         navigationView.setNavigationItemSelectedListener { menuItem ->
             // Handle navigation drawer item clicks here
             when (menuItem.itemId) {
+                R.id.home -> {
+                    val homeFragment = HomeFragment()
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, homeFragment)
+                        .commit()
+                }
                 R.id.compiler -> {
                     val compilerFragment = CompilerFragment()
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, compilerFragment)
+                        .addToBackStack(null)
                         .commit()
                 }
                 R.id.moreApps -> {
@@ -64,6 +78,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.rateUs -> {
                     // Handle item 2 click
                     // Example: startActivity(Intent(this, Item2Activity::class.java))
+
+                }
+                R.id.share ->{
+                    shareLinkToSocialMedia(shareContent)
                 }
                 // Add more cases for other menu items
             }
@@ -92,6 +110,21 @@ class MainActivity : AppCompatActivity() {
             } else {
                 super.onBackPressed()
             }
+        }
+    }
+
+    @SuppressLint("QueryPermissionsNeeded")
+    private fun shareLinkToSocialMedia(shareContent: String) {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_TEXT, shareContent)
+
+        // Create a chooser to allow the user to pick from available apps
+        val chooserIntent = Intent.createChooser(intent, "Share Link via")
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(chooserIntent)
+        } else {
+            // No apps on the device can handle the sharing intent.
         }
     }
 }
