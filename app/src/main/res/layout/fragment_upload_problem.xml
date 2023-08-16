@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".fragments.UploadProblemFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:background="@color/white">
+
+        <EditText
+            android:id="@+id/editTextProblemNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Problem Number"
+            android:background="@drawable/custom_edittext"
+            android:padding="10dp"
+            android:inputType="number"
+            android:imeOptions="actionNext"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/editTextProblemName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Problem Name"
+            android:minLines="4"
+            android:background="@drawable/custom_edittext"
+            android:padding="10dp"
+            android:inputType="textMultiLine"
+            android:imeOptions="actionNext"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/editTextAlgorithm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Algorithm"
+            android:background="@drawable/custom_edittext"
+            android:padding="10dp"
+            android:minLines="5"
+            android:inputType="textMultiLine"
+            android:imeOptions="actionNext"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/editTextCProgramCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="C Program Code"
+            android:background="@drawable/custom_edittext"
+            android:padding="10dp"
+            android:minLines="5"
+            android:inputType="textMultiLine"
+            android:imeOptions="actionNext"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/editTextCppCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="C++ Code"
+            android:background="@drawable/custom_edittext"
+            android:padding="10dp"
+            android:minLines="5"
+            android:inputType="textMultiLine"
+            android:imeOptions="actionNext"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/editTextJavaCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Java Code"
+            android:background="@drawable/custom_edittext"
+            android:padding="10dp"
+            android:minLines="5"
+            android:inputType="textMultiLine"
+            android:imeOptions="actionNext"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/editTextPythonCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Python Code"
+            android:background="@drawable/custom_edittext"
+            android:padding="10dp"
+            android:minLines="5"
+            android:inputType="textMultiLine"
+            android:imeOptions="actionDone"
+            android:layout_marginBottom="16dp"/>
+
+        <Button
+            android:id="@+id/buttonUpload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upload"
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/colorAccent"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"/>
+    </LinearLayout>
+</ScrollView>
