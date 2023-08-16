@@ -30,6 +30,7 @@ class UploadProblemFragment : Fragment() {
         binding.buttonUpload.setOnClickListener {
             val problemNumber = binding.editTextProblemNumber.text.toString()
             val problemName = binding.editTextProblemName.text.toString()
+            val problemAlgorithms = binding.editTextAlgorithm.text.toString()
             val cprogramCode = binding.editTextCProgramCode.text.toString()
             val cppCode = binding.editTextCppCode.text.toString()
             val javaCode = binding.editTextJavaCode.text.toString()
@@ -38,6 +39,7 @@ class UploadProblemFragment : Fragment() {
             val problemData = hashMapOf(
                 "problemNumber" to problemNumber,
                 "problemName" to problemName,
+                "problemAlgorithms" to problemAlgorithms,
                 "cprogramCode" to cprogramCode,
                 "cppCode" to cppCode,
                 "javaCode" to javaCode,
@@ -53,7 +55,7 @@ class UploadProblemFragment : Fragment() {
                     parentFragmentManager.popBackStack()
                     Toast.makeText(requireContext(), "Uploaded successfully", Toast.LENGTH_SHORT).show()
                 }
-                .addOnFailureListener { exception ->
+                .addOnFailureListener {
                     // Handle error here
                     // You can show an error message or handle the error in any way you want
                     Toast.makeText(requireContext(), "Check your internet connection", Toast.LENGTH_SHORT).show()
