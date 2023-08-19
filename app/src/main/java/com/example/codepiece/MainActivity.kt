@@ -14,10 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.codepiece.adapter.ModuleAdapter
 import com.example.codepiece.data.ModuleItem
 import com.example.codepiece.databinding.ActivityMainBinding
-import com.example.codepiece.fragments.CompilerFragment
-import com.example.codepiece.fragments.CoursesFragment
-import com.example.codepiece.fragments.HomeFragment
-import com.example.codepiece.fragments.ProblemsFragment
+import com.example.codepiece.fragments.*
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -82,6 +79,13 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.share ->{
                     shareLinkToSocialMedia(shareContent)
+                }
+                R.id.admin ->{
+                    val loginFragment = LogInFragment()
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, loginFragment)
+                        .addToBackStack(null)
+                        .commit()
                 }
                 // Add more cases for other menu items
             }
