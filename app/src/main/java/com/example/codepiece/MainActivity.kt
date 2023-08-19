@@ -1,18 +1,14 @@
 package com.example.codepiece
 
 import android.annotation.SuppressLint
+import android.app.FragmentManager
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
-import com.example.codepiece.adapter.ModuleAdapter
-import com.example.codepiece.data.ModuleItem
 import com.example.codepiece.databinding.ActivityMainBinding
 import com.example.codepiece.fragments.*
 import com.google.android.material.navigation.NavigationView
@@ -57,12 +53,14 @@ class MainActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.home -> {
                     val homeFragment = HomeFragment()
+                    supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, homeFragment)
                         .commit()
                 }
                 R.id.compiler -> {
                     val compilerFragment = CompilerFragment()
+                    supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, compilerFragment)
                         .addToBackStack(null)
@@ -75,13 +73,13 @@ class MainActivity : AppCompatActivity() {
                 R.id.rateUs -> {
                     // Handle item 2 click
                     // Example: startActivity(Intent(this, Item2Activity::class.java))
-
                 }
                 R.id.share ->{
                     shareLinkToSocialMedia(shareContent)
                 }
                 R.id.admin ->{
                     val loginFragment = LogInFragment()
+                    supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, loginFragment)
                         .addToBackStack(null)
@@ -104,7 +102,6 @@ class MainActivity : AppCompatActivity() {
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         // Find the current fragment
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {

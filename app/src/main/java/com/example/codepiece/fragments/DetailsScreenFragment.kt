@@ -3,6 +3,7 @@ package com.example.codepiece.fragments
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +17,16 @@ import com.example.codepiece.databinding.FragmentDetailsScreenBinding
 
 class DetailsScreenFragment : Fragment() {
     private lateinit var binding: FragmentDetailsScreenBinding
+    private lateinit var problemType: String
     private lateinit var selectedButton : String
+    private lateinit var problemNumber : String
+    private lateinit var problemName : String
+    private lateinit var problemAlgorithms : String
+    private lateinit var cprogramCode : String
+    private lateinit var cppCode : String
+    private lateinit var javaCode : String
+    private lateinit var pythonCode : String
+    private lateinit var sharedPreferences: SharedPreferences // Declare sharedPreferences variable
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,6 +34,39 @@ class DetailsScreenFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment using View Binding
         binding = FragmentDetailsScreenBinding.inflate(inflater, container, false)
+        problemType = arguments?.getString("problemType").toString()
+        sharedPreferences = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        // Check if the user is logged in using SharedPreferences
+        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+        if (isLoggedIn){
+            binding.editProblemButton.visibility = View.VISIBLE
+        } else {
+            binding.editProblemButton.visibility = View.GONE
+        }
+
+        // Inside onViewCreated after setting click listeners for the buttons
+        binding.editProblemButton.setOnClickListener {
+            // Create a bundle with the data to pass to UploadProblemsFragment
+            val bundle = Bundle().apply {
+                putString("problemType", problemType)
+                putString("problemNumber", problemNumber)
+                putString("problemName", problemName)
+                putString("problemAlgorithms", problemAlgorithms)
+                putString("cprogramCode", cprogramCode)
+                putString("cppCode", cppCode)
+                putString("javaCode", javaCode)
+                putString("pythonCode", pythonCode)
+                putBoolean("update", true) // Set the update key
+            }
+
+            val uploadFragment = UploadProblemFragment()
+            uploadFragment.arguments = bundle
+
+            val fragmentTransaction = parentFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.fragmentContainer, uploadFragment)
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.commit()
+        }
 
         binding.copyCodeButton.setOnClickListener {
             // Get the code from the TextView
@@ -61,13 +104,13 @@ class DetailsScreenFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Retrieve data from the bundle
-        val problemNumber = arguments?.getString("problemNumber")
-        val problemName = arguments?.getString("problemName")
-        val problemAlgorithms = arguments?.getString("problemAlgorithms")
-        val cprogramCode = arguments?.getString("cprogramCode")
-        val cppCode = arguments?.getString("cppCode")
-        val javaCode = arguments?.getString("javaCode")
-        val pythonCode = arguments?.getString("pythonCode")
+        problemNumber = arguments?.getString("problemNumber").toString()
+        problemName = arguments?.getString("problemName").toString()
+        problemAlgorithms = arguments?.getString("problemAlgorithms").toString()
+        cprogramCode = arguments?.getString("cprogramCode").toString()
+        cppCode = arguments?.getString("cppCode").toString()
+        javaCode = arguments?.getString("javaCode").toString()
+        pythonCode = arguments?.getString("pythonCode").toString()
 
         // Set data to the layout's views using View Binding
         binding.problemNumberTextView.text = problemNumber

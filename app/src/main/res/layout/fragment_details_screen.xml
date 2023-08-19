@@ -11,6 +11,17 @@
         android:background="@color/white"
         android:padding="10dp">
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/editProblemButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_edit"
+            android:backgroundTint="@color/colorAccent"
+            android:contentDescription="Edit button" />
+
         <TextView
             android:id="@+id/problemNumberTextView"
             android:layout_width="wrap_content"

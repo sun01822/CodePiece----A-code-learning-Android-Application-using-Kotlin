@@ -61,7 +61,6 @@ class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener {
 
             val uploadFragment = UploadProblemFragment()
             uploadFragment.arguments = bundle
-
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, uploadFragment)
                 .addToBackStack(null)
@@ -114,6 +113,7 @@ class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener {
 
     override fun onItemClick(subProblem: SubProblem) {
         val bundle = Bundle().apply {
+            putString("problemType", problemType)
             putString("problemNumber", subProblem.problemNumber)
             putString("problemName", subProblem.problemName)
             putString("problemAlgorithms", subProblem.problemAlgorithms)
