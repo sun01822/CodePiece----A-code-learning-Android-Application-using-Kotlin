@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.codepiece.R
@@ -17,7 +18,8 @@ import com.example.codepiece.databinding.FragmentSubProblemsBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 
-class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener {
+
+class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener, SubProblemsAdapter.OnItemLongPressListener {
     private lateinit var binding: FragmentSubProblemsBinding
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private lateinit var problemType: String
@@ -35,9 +37,6 @@ class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener {
         val recyclerView: RecyclerView = binding.subProblemsRecyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        //
-        /*uploadProblemsToFirestore()*/
-
         // Fetch subProblems data from Firebase Firestore
         fetchSubProblemsData()
 
@@ -49,9 +48,6 @@ class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener {
 
         // Set visibility of addButton based on the user's login status
         binding.addButton.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
-
-
-
 
         binding.addButton.setOnClickListener {
             val bundle = Bundle().apply {
@@ -71,7 +67,7 @@ class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener {
     }
 
     private fun fetchSubProblemsData() {
-        firestore.collection(problemType) // Replace with your collection name
+        firestore.collection(problemType)
             .get()
             .addOnSuccessListener { querySnapshot: QuerySnapshot ->
                 val subProblems = mutableListOf<SubProblem>()
@@ -101,7 +97,7 @@ class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener {
 
                 // Update the adapter with the sorted data
                 val recyclerView: RecyclerView = binding.subProblemsRecyclerView
-                val subProblemsAdapter = SubProblemsAdapter(subProblems, this)
+                val subProblemsAdapter = SubProblemsAdapter(subProblems, this, this)
                 recyclerView.adapter = subProblemsAdapter
             }
             .addOnFailureListener {
@@ -132,4 +128,40 @@ class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener {
             .commit()
     }
 
+    override fun onOnItemLongPress(subProblem: SubProblem) {
+        // Show an alert dialog for confirmation before deleting
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Problem")
+            .setMessage("Are you sure you want to delete this problem?")
+            .setPositiveButton("Delete") { _, _ ->
+                deleteSubProblem(subProblem)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+    private fun deleteSubProblem(subProblem: SubProblem) {
+        val problemNumber = subProblem.problemNumber
+        firestore.collection(problemType)
+            .whereEqualTo("problemNumber", problemNumber) // Query to find the document
+            .get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    val document = documents.documents[0]
+                    document.reference.delete()
+                        .addOnSuccessListener {
+                            // Problem deleted successfully
+                            parentFragmentManager.popBackStack()
+                            Toast.makeText(requireContext(), "Problem deleted successfully", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            // Handle error
+                            Toast.makeText(requireContext(), "Error deleting problem", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }
+            .addOnFailureListener {
+                // Handle error
+                Toast.makeText(requireContext(), "Check your data connection", Toast.LENGTH_SHORT).show()
+            }
+    }
 }

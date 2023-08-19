@@ -8,12 +8,36 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.codepiece.R
 import com.example.codepiece.data.SubProblem
 
-class SubProblemsAdapter(private val subProblems: List<SubProblem>, private val listener: OnItemClickListener) :
+
+class SubProblemsAdapter(
+    private val subProblems: List<SubProblem>,
+    private val listener: OnItemClickListener,
+    private val longPressListener: OnItemLongPressListener
+) :
     RecyclerView.Adapter<SubProblemsAdapter.SubProblemViewHolder>() {
 
     inner class SubProblemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val problemNumberTextView: TextView = itemView.findViewById(R.id.problemNumberTextView)
         val problemNameTextView: TextView = itemView.findViewById(R.id.problemNameTextView)
+
+        init {
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val subProblem = subProblems[position]
+                    listener.onItemClick(subProblem)
+                }
+            }
+
+            itemView.setOnLongClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val subProblem = subProblems[position]
+                    longPressListener.onOnItemLongPress(subProblem)
+                }
+                true // Consume the long-press event
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubProblemViewHolder {
@@ -28,11 +52,6 @@ class SubProblemsAdapter(private val subProblems: List<SubProblem>, private val 
         // Bind data to views
         holder.problemNumberTextView.text = subProblem.problemNumber
         holder.problemNameTextView.text = subProblem.problemName
-
-        // Set click listener on the item view
-        holder.itemView.setOnClickListener {
-            listener.onItemClick(subProblem)
-        }
     }
 
     override fun getItemCount(): Int {
@@ -41,5 +60,9 @@ class SubProblemsAdapter(private val subProblems: List<SubProblem>, private val 
 
     interface OnItemClickListener {
         fun onItemClick(subProblem: SubProblem)
+    }
+
+    interface OnItemLongPressListener {
+        fun onOnItemLongPress(subProblem: SubProblem)
     }
 }
