@@ -20,11 +20,10 @@ import com.example.codepiece.R
 import com.example.codepiece.data.ProblemItem
 import com.example.codepiece.fragments.SubProblemsFragment
 
-class ProblemsAdapter(private val context: Context, private val problemItems: List<ProblemItem>) :
-    RecyclerView.Adapter<ProblemsAdapter.ProblemViewHolder>() {
-
-    private val handler = Handler(Looper.getMainLooper())
-    private var currentItemPosition = 0
+class ProblemsAdapter(
+    private val context: Context,
+    private val problemItems: List<ProblemItem>
+) : RecyclerView.Adapter<ProblemsAdapter.ProblemViewHolder>() {
 
     inner class ProblemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val problemImageView: ImageView = itemView.findViewById(R.id.problemImageView)
@@ -67,14 +66,16 @@ class ProblemsAdapter(private val context: Context, private val problemItems: Li
     override fun getItemCount(): Int {
         return problemItems.size
     }
+
     companion object {
         private const val IMAGE_SLIDER_INTERVAL = 3000L // Change image every 3 seconds
     }
+
     private fun startImageSlider(
         context: Context,
         imageView: ImageView,
         imageUrls: List<String>,
-        holder: ProblemsAdapter.ProblemViewHolder
+        holder: ProblemViewHolder
     ) {
         val handler = Handler(Looper.getMainLooper())
         var currentItemPosition = 0
