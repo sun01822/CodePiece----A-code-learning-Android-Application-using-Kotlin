@@ -24,7 +24,7 @@ class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener, 
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private lateinit var problemType: String
     private lateinit var sharedPreferences: SharedPreferences // Declare sharedPreferences variable
-
+    private var isLoggedIn : Boolean = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,7 +44,7 @@ class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener, 
         sharedPreferences = requireContext().getSharedPreferences("UserData", Context.MODE_PRIVATE)
 
         // Check if the user is logged in using SharedPreferences
-        val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
+        isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
 
         // Set visibility of addButton based on the user's login status
         binding.addButton.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
@@ -129,15 +129,19 @@ class SubProblemsFragment : Fragment(), SubProblemsAdapter.OnItemClickListener, 
     }
 
     override fun onOnItemLongPress(subProblem: SubProblem) {
-        // Show an alert dialog for confirmation before deleting
-        AlertDialog.Builder(requireContext())
-            .setTitle("Delete Problem")
-            .setMessage("Are you sure you want to delete this problem?")
-            .setPositiveButton("Delete") { _, _ ->
-                deleteSubProblem(subProblem)
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+        if (isLoggedIn) {
+            // Show an alert dialog for confirmation before deleting
+            AlertDialog.Builder(requireContext())
+                .setTitle("Delete Problem")
+                .setMessage("Are you sure you want to delete this problem?")
+                .setPositiveButton("Delete") { _, _ ->
+                    deleteSubProblem(subProblem)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        } else {
+            Toast.makeText(requireContext(), "You must be logged in to delete problems.", Toast.LENGTH_SHORT).show()
+        }
     }
     private fun deleteSubProblem(subProblem: SubProblem) {
         val problemNumber = subProblem.problemNumber
