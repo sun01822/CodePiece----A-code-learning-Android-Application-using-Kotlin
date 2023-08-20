@@ -71,7 +71,12 @@ class MainActivity : AppCompatActivity() {
                     // Example: startActivity(Intent(this, Item1Activity::class.java))
                 }
                 R.id.aboutUs -> {
-
+                    val aboutFragment = AboutUsFragment()
+                    supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, aboutFragment)
+                        .addToBackStack(null)
+                        .commit()
                     // Handle item 2 click
                     // Example: startActivity(Intent(this, Item2Activity::class.java))
                 }
