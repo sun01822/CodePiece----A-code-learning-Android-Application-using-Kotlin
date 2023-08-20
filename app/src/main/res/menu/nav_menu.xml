@@ -20,9 +20,9 @@
         android:title="More Apps" />
 
     <item
-        android:id="@+id/rateUs"
-        android:icon="@drawable/star"
-        android:title="Rate Us" />
+        android:id="@+id/aboutUs"
+        android:icon="@drawable/ic_about"
+        android:title="About Us" />
 
     <item
         android:id="@+id/privacy"

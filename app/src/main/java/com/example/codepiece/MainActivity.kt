@@ -70,7 +70,8 @@ class MainActivity : AppCompatActivity() {
                     // Handle item 1 click
                     // Example: startActivity(Intent(this, Item1Activity::class.java))
                 }
-                R.id.rateUs -> {
+                R.id.aboutUs -> {
+
                     // Handle item 2 click
                     // Example: startActivity(Intent(this, Item2Activity::class.java))
                 }
