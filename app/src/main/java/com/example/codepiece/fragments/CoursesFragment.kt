@@ -8,7 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.codepiece.R
 import com.example.codepiece.adapter.CourseAdapter
 import com.example.codepiece.data.CourseData
 import com.example.codepiece.databinding.FragmentCoursesBinding
@@ -18,9 +21,11 @@ class CoursesFragment : Fragment() {
 
     private lateinit var binding: FragmentCoursesBinding
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var firestore: FirebaseFirestore
     private var isLoggedIn: Boolean = false
     private val courses: MutableList<CourseData> = ArrayList()
+    private lateinit var courseAdapter: CourseAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,11 +34,18 @@ class CoursesFragment : Fragment() {
         binding = FragmentCoursesBinding.inflate(inflater, container, false)
         val view = binding.root
 
+
         // Initialize RecyclerView and set up the adapter
-        val courseAdapter = CourseAdapter(courses)
+        courseAdapter = CourseAdapter(courses)
         binding.courseRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = courseAdapter
+        }
+
+        swipeRefreshLayout = binding.swipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener {
+            // Refresh the data when the user swipes down
+            fetchCoursesFromFirestore()
         }
 
         // Initialize Firestore
@@ -46,32 +58,47 @@ class CoursesFragment : Fragment() {
 
         // Set up FloatingActionButton click listener
         binding.floatingActionButton.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
-        binding.floatingActionButton.setOnClickListener { v ->
-            // Implement logic to show dialog or activity for adding new course
+        binding.floatingActionButton.setOnClickListener {
+            // Navigate to UploadCourseFragment
+            val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
+            val uploadCourseFragment = UploadCourseFragment()
+
+            fragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, uploadCourseFragment)
+                .addToBackStack(null) // Add transaction to the back stack
+                .commit()
         }
 
-        fetchCoursesFromFirestore(courseAdapter)
+        // Fetch courses from Firestore and display them
+        fetchCoursesFromFirestore()
 
         return view
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun fetchCoursesFromFirestore(adapter: CourseAdapter) {
+    private fun fetchCoursesFromFirestore() {
         firestore.collection("courses")
             .get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    courses.clear()
+                    courses.clear() // Clear the previous data
                     for (document in task.result) {
-                        val name = document.getString("name")
+                        val title = document.getString("title")
                         val imageUrl = document.getString("imageUrl")
                         val playlistUrl = document.getString("playlistUrl")
-                        courses.add(CourseData(name!!, imageUrl!!, playlistUrl!!))
+                        courses.add(CourseData(title!!, imageUrl!!, playlistUrl!!))
                     }
-                    adapter.notifyDataSetChanged()
+                    // Notify the adapter that data has changed
+                    courseAdapter.notifyDataSetChanged()
                 } else {
                     // Handle error
                 }
             }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh the data when the fragment becomes visible
+        fetchCoursesFromFirestore()
     }
 }
