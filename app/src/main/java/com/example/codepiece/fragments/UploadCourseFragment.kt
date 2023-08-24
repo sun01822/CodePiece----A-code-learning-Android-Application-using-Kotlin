@@ -19,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
+import java.util.*
 
 class UploadCourseFragment : Fragment() {
 
@@ -40,6 +41,7 @@ class UploadCourseFragment : Fragment() {
         firestore = FirebaseFirestore.getInstance()
         storageReference = firebaseStorage.reference
 
+
         // Set click listener for the uploadImageView to select an image from gallery
         binding.uploadImageView.setOnClickListener {
             openGallery()
@@ -47,6 +49,8 @@ class UploadCourseFragment : Fragment() {
 
         // Set click listener for the uploadButton to upload course data
         binding.uploadButton.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
+            binding.uploadButton.visibility = View.GONE
             uploadCourseData()
         }
 
@@ -64,6 +68,8 @@ class UploadCourseFragment : Fragment() {
         val playlistUrl = binding.urlEditText.text.toString().trim()
 
         if (selectedImageUri != null && title.isNotEmpty() && playlistUrl.isNotEmpty()) {
+            // Generate a unique name for the image using UUID
+            val uniqueImageName = UUID.randomUUID().toString()
             // Load the selected image into a Bitmap
             val inputStream = requireContext().contentResolver.openInputStream(selectedImageUri!!)
             val bitmap = BitmapFactory.decodeStream(inputStream)
@@ -78,7 +84,7 @@ class UploadCourseFragment : Fragment() {
             // Create a byte array from the ByteArrayOutputStream
             val imageData = baos.toByteArray()
 
-            val courseImageRef = storageReference.child("course_images")
+            val courseImageRef = storageReference.child("course_images").child(uniqueImageName)
             courseImageRef.putBytes(imageData)
                 .addOnSuccessListener { taskSnapshot ->
                     taskSnapshot.storage.downloadUrl.addOnCompleteListener { imageUrlTask ->
@@ -93,6 +99,8 @@ class UploadCourseFragment : Fragment() {
                             .addOnSuccessListener {
                                 // Course data uploaded successfully
                                 // Implement your desired action (e.g., show a success message)
+                                binding.progressBar.visibility = View.GONE
+                                binding.uploadButton.visibility = View.VISIBLE
                                 Toast.makeText(requireContext(), "Course upload successfully", Toast.LENGTH_SHORT).show()
                                 val fragmentManager: androidx.fragment.app.FragmentManager = requireActivity().supportFragmentManager
                                 val coursesFragment = CoursesFragment()

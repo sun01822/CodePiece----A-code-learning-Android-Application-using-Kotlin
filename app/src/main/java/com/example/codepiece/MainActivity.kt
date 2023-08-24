@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var shareContent: String
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -38,9 +39,14 @@ class MainActivity : AppCompatActivity() {
             this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
         drawerLayout.addDrawerListener(toggle)
+        // Set the action bar color
+        supportActionBar?.setBackgroundDrawable(resources.getDrawable(R.color.colorAccent))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
         toggle.syncState()
+
+        // Set the toggle button color
+        toggle.drawerArrowDrawable.color = resources.getColor(R.color.white)
 
         val fragment = HomeFragment()
         supportFragmentManager.beginTransaction()
