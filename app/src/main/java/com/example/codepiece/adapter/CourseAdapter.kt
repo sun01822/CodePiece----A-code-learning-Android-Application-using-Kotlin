@@ -28,7 +28,7 @@ class CourseAdapter(private val courses: List<CourseData>) :
 
     inner class CourseViewHolder(private val binding: CourseItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(course: CourseData) {
-            binding.courseName.text = course.name
+            binding.courseName.text = course.title
 
             // Load and display image using Glide
             Glide.with(binding.root.context)
