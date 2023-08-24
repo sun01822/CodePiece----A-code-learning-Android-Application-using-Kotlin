@@ -18,7 +18,6 @@ import com.example.codepiece.databinding.FragmentCoursesBinding
 import com.google.firebase.firestore.FirebaseFirestore
 
 class CoursesFragment : Fragment() {
-
     private lateinit var binding: FragmentCoursesBinding
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -33,7 +32,6 @@ class CoursesFragment : Fragment() {
     ): View {
         binding = FragmentCoursesBinding.inflate(inflater, container, false)
         val view = binding.root
-
 
         // Initialize RecyclerView and set up the adapter
         courseAdapter = CourseAdapter(courses)
@@ -77,9 +75,13 @@ class CoursesFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun fetchCoursesFromFirestore() {
+        swipeRefreshLayout.isRefreshing = true // Start the refreshing animation
+
         firestore.collection("courses")
             .get()
             .addOnCompleteListener { task ->
+                swipeRefreshLayout.isRefreshing = false // Stop the refreshing animation
+
                 if (task.isSuccessful) {
                     courses.clear() // Clear the previous data
                     for (document in task.result) {
@@ -94,11 +96,5 @@ class CoursesFragment : Fragment() {
                     // Handle error
                 }
             }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // Refresh the data when the fragment becomes visible
-        fetchCoursesFromFirestore()
     }
 }
