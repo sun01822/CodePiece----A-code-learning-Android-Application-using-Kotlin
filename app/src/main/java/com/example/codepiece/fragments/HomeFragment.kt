@@ -46,6 +46,7 @@ class HomeFragment : Fragment() {
                     "Problems" -> ProblemsFragment()
                     "Courses" -> CoursesFragment()
                     "Compile Code" -> CompilerFragment()
+                    "Books" -> BooksFragment()
                     else -> {
                         // Handle other cases or set to a default fragment if needed
                         HomeFragment() // Replace with a default fragment or handle other cases
