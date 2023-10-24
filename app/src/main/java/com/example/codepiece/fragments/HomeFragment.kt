@@ -46,7 +46,13 @@ class HomeFragment : Fragment() {
                     "Problems" -> ProblemsFragment()
                     "Courses" -> CoursesFragment()
                     "Compile Code" -> CompilerFragment()
+                    "Join Contest" -> JoinContestFragment()
                     "Books" -> BooksFragment()
+                    "Join Lectures" -> LecturesFragment()
+                    "Course" -> CoursesFragment()
+                    "Test Yourself" -> TestYourselfFragment()
+                    "DSA" -> DSAFragment()
+                    "Blogs" -> BlogsFragment()
                     else -> {
                         // Handle other cases or set to a default fragment if needed
                         HomeFragment() // Replace with a default fragment or handle other cases
