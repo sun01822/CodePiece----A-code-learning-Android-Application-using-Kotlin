@@ -72,36 +72,38 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/problemAlgorithmsTextView"
             android:layout_marginTop="16dp"
+            android:weightSum="4"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/cButton"
                 style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
                 android:text="C" />
 
             <Button
                 android:id="@+id/cppButton"
                 style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
                 android:text="Cpp" />
 
             <Button
                 android:id="@+id/javaButton"
                 style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
                 android:text="Java" />
 
             <Button
                 android:id="@+id/pythonButton"
                 style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:text="Python" />
 
