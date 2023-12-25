@@ -1,11 +1,15 @@
 package com.example.codepiece.fragments.languages
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.codepiece.R
 import com.example.codepiece.adapter.QuestionAdapter
 import com.example.codepiece.data.QuestionModel
 import com.example.codepiece.databinding.FragmentQuizBinding
@@ -22,15 +26,27 @@ class JavaFragment : Fragment() {
     ): View {
         binding = FragmentQuizBinding.inflate(inflater)
 
-        // Initialize RecyclerView
-        questionAdapter = QuestionAdapter(questionList)
+        questionAdapter = QuestionAdapter(questionList) { position, answer ->
+            // Handle the selected answer, if needed
+        }
+
+        questionAdapter.setOnOptionSelectedListener { position, answer ->
+            // Handle the selected answer, if needed
+        }
+
         binding.questionRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.questionRecyclerView.adapter = questionAdapter
+
 
         binding.quizName.text = "Java Quiz"
 
         // Fetch questions from Firestore
         fetchQuestionsFromFirestore()
+
+        binding.submitButton.setOnClickListener {
+            checkAllAnswers()
+            binding.submitButton.visibility = View.GONE
+        }
 
         return binding.root
     }
@@ -54,5 +70,27 @@ class JavaFragment : Fragment() {
             .addOnFailureListener { exception ->
                 // Handle the failure
             }
+    }
+    private fun checkAllAnswers() {
+        for (i in 0 until questionList.size) {
+            binding.questionRecyclerView.getChildAt(i).findViewById<LinearLayout>(R.id.answerLayout).visibility = View.VISIBLE
+            val selectedAnswer = questionAdapter.getSelectedAnswer(i)
+            val correctAnswer = questionList[i].answer
+
+            // Compare the selected answer with the correct answer
+            if (selectedAnswer == correctAnswer) {
+                // Change radio button text color to green for correct answers
+                binding.questionRecyclerView.getChildAt(i).findViewById<TextView>(R.id.answerTextView).setTextColor(
+                    Color.GREEN)
+                binding.questionRecyclerView.getChildAt(i).findViewById<TextView>(R.id.answerTextView2).text = correctAnswer
+            } else {
+                // Change radio button text color to red for incorrect answers
+                binding.questionRecyclerView.getChildAt(i).findViewById<TextView>(R.id.answerTextView).setTextColor(
+                    Color.RED)
+                binding.questionRecyclerView.getChildAt(i).findViewById<TextView>(R.id.answerTextView2).text = correctAnswer
+            }
+        }
+        // Notify the adapter about the data change after the loop
+        questionAdapter.notifyDataSetChanged()
     }
 }
