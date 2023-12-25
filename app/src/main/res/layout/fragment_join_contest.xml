@@ -16,13 +16,12 @@
         android:textStyle="bold"
         android:textAlignment="center"/>
 
-    <TextView
-        android:layout_marginTop="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Coming Soon"
-        android:textSize="20sp"
-        android:textColor="@color/black"
-        android:textAlignment="center"/>
-
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/gridRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            tools:listitem="@layout/language_layout"
+            />
 </LinearLayout>
