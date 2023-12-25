@@ -6,14 +6,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.codepiece.R
+import com.example.codepiece.databinding.FragmentJoinContestBinding
 
 class JoinContestFragment : Fragment() {
-
+    private lateinit var binding : FragmentJoinContestBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_join_contest, container, false)
+        binding = FragmentJoinContestBinding.inflate(layoutInflater)
+        return binding.root
+
+
+
+
+
+
+
+
+
+
     }
 }
