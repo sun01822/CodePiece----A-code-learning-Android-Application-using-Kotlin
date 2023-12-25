@@ -9,19 +9,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.codepiece.R
 import com.example.codepiece.adapter.ModuleAdapter
 import com.example.codepiece.data.ModuleItem
+import com.example.codepiece.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
     private lateinit var moduleAdapter: ModuleAdapter
-
+    private lateinit var binding: FragmentHomeBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
-
-        // Initialize RecyclerView and Adapter
-        val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
+        binding = FragmentHomeBinding.inflate(inflater)
 
         val moduleItems = listOf(
             ModuleItem("Problems", R.drawable.problems),
@@ -37,7 +35,7 @@ class HomeFragment : Fragment() {
         )
 
         moduleAdapter = ModuleAdapter(requireContext(), moduleItems)
-        recyclerView.adapter = moduleAdapter
+        binding.recyclerView.adapter = moduleAdapter
 
         moduleAdapter.setOnclickListener(object : ModuleAdapter.OnClickListener {
             override fun onClick(position: Int, moduleItem: ModuleItem) {
@@ -62,7 +60,7 @@ class HomeFragment : Fragment() {
             }
         })
 
-        return view
+        return binding.root
     }
 
     private fun navigateToFragment(fragment: Fragment) {
