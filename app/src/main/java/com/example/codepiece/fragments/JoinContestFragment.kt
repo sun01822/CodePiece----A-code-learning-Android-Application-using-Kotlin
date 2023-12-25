@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.codepiece.R
 import com.example.codepiece.adapter.GridAdapter
 import com.example.codepiece.data.GridItem
@@ -34,10 +35,12 @@ class JoinContestFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentJoinContestBinding.inflate(layoutInflater)
+        Glide.with(this.requireContext()).load(R.drawable.quiz).into(binding.quizImage)
         gridRecyclerView = binding.gridRecyclerView
         gridRecyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
         gridAdapter = GridAdapter(requireContext(), gridItems)
         gridRecyclerView.adapter = gridAdapter
+        Glide.with(this.requireContext()).load(R.drawable.quiz).into(binding.quizImage)
         gridAdapter.setOnclickListener(object : GridAdapter.OnClickListener{
             override fun onClick(position: Int, gridItem: GridItem) {
                 val fragment = when (position) {
