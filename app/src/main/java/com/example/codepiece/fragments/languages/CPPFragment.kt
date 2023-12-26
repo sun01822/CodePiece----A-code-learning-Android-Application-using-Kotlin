@@ -22,6 +22,7 @@ class CPPFragment : Fragment() {
     private lateinit var binding: FragmentQuizBinding
     private lateinit var questionAdapter: QuestionAdapter
     private val questionList = mutableListOf<QuestionModel>() // Assuming you have a Question data class
+    private var isQuestionAnswered = BooleanArray(questionList.size) { false }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,10 +34,17 @@ class CPPFragment : Fragment() {
             // Handle the selected answer, if needed
         }
 
-        questionAdapter.setOnOptionSelectedListener { position, answer ->
-            // Handle the selected answer, if needed
-        }
+        questionAdapter.setOnOptionSelectedListener { position, _ ->
+            // Empty listener, you can handle selected options here if needed
+            // Mark the question as answered
+            isQuestionAnswered[position] = true
+            // Check if all questions are answered
+            val allQuestionsAnswered = isQuestionAnswered.all { it }
 
+            // Show submit button when answered count is the same as the total number of questions
+            binding.submitButton.visibility = if (allQuestionsAnswered && questionAdapter.getAnsweredCount() == questionList.size) View.VISIBLE else View.GONE
+
+        }
         binding.questionRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.questionRecyclerView.adapter = questionAdapter
 
@@ -68,6 +76,8 @@ class CPPFragment : Fragment() {
                         questionList.add(it)
                     }
                 }
+                // Initialize isQuestionAnswered after fetching questions
+                isQuestionAnswered = BooleanArray(questionList.size) { false }
                 questionAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->
