@@ -6,23 +6,46 @@
     android:orientation="vertical"
     tools:context=".fragments.TestYourselfFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Test Yourself"
-        android:textSize="30sp"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        android:textAlignment="center"/>
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp"
+        android:layout_gravity="center"
+        android:padding="10dp"
+        android:weightSum="2">
 
-    <TextView
-        android:layout_marginTop="20dp"
+        <ImageView
+            android:id="@+id/quizImage"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:src="@drawable/quiz"
+            android:layout_marginStart="25dp"
+            android:layout_weight="1"
+            android:gravity="end"
+            />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Quiz"
+            android:textSize="62sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginStart="-65dp"
+            android:layout_weight="1"/>
+
+        <!-- Other views or components can be added here -->
+
+    </LinearLayout>
+
+    <!-- TODO: Update blank fragment layout -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/gridRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Coming Soon"
-        android:textSize="20sp"
-        android:textColor="@color/black"
-        android:textAlignment="center"/>
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        tools:listitem="@layout/language_layout" />
 
 </LinearLayout>
