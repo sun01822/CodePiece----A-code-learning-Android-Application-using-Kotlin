@@ -78,6 +78,8 @@ class PythonFragment : Fragment() {
                 // Change radio button text color to green for correct answers
                 binding.questionRecyclerView.getChildAt(i).findViewById<TextView>(R.id.answerTextView).setTextColor(
                     Color.GREEN)
+                //  binding.questionRecyclerView.getChildAt(i).findViewById<RadioButton>(R.id.option1).setTextColor(
+                //                    Color.GREEN)
                 binding.questionRecyclerView.getChildAt(i).findViewById<TextView>(R.id.answerTextView2).text = correctAnswer
             } else {
                 // Change radio button text color to red for incorrect answers
