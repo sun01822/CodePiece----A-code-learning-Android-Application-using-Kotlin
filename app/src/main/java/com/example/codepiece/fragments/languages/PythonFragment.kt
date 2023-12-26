@@ -1,13 +1,14 @@
 package com.example.codepiece.fragments.languages
 
+import android.annotation.SuppressLint
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.RadioButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.codepiece.R
 import com.example.codepiece.adapter.QuestionAdapter
@@ -67,25 +68,75 @@ class PythonFragment : Fragment() {
                 // Handle the failure
             }
     }
+    @SuppressLint("CutPasteId")
     private fun checkAllAnswers() {
         for (i in 0 until questionList.size) {
-            binding.questionRecyclerView.getChildAt(i).findViewById<LinearLayout>(R.id.answerLayout).visibility = View.VISIBLE
+//            binding.questionRecyclerView.getChildAt(i)
+//                .findViewById<LinearLayout>(R.id.answerLayout).visibility = View.VISIBLE
             val selectedAnswer = questionAdapter.getSelectedAnswer(i)
             val correctAnswer = questionList[i].answer
 
-            // Compare the selected answer with the correct answer
+            val option1 = binding.questionRecyclerView.getChildAt(i)
+                .findViewById<RadioButton>(R.id.option1).text.toString()
+            val option2 = binding.questionRecyclerView.getChildAt(i)
+                .findViewById<RadioButton>(R.id.option2).text.toString()
+            val option3 = binding.questionRecyclerView.getChildAt(i)
+                .findViewById<RadioButton>(R.id.option3).text.toString()
+            val option4 = binding.questionRecyclerView.getChildAt(i)
+                .findViewById<RadioButton>(R.id.option4).text.toString()
+
             if (selectedAnswer == correctAnswer) {
-                // Change radio button text color to green for correct answers
-                binding.questionRecyclerView.getChildAt(i).findViewById<TextView>(R.id.answerTextView).setTextColor(
-                    Color.GREEN)
-                //  binding.questionRecyclerView.getChildAt(i).findViewById<RadioButton>(R.id.option1).setTextColor(
-                //                    Color.GREEN)
-                binding.questionRecyclerView.getChildAt(i).findViewById<TextView>(R.id.answerTextView2).text = correctAnswer
+                if (selectedAnswer == option1) {
+                    binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option1).setTextColor(Color.GREEN)
+                    val radioButton = binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option1)
+                    radioButton.setTypeface(null, Typeface.BOLD)
+                } else if (selectedAnswer == option2) {
+                    binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option2).setTextColor(Color.GREEN)
+                    val radioButton = binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option2)
+                    radioButton.setTypeface(null, Typeface.BOLD)
+                } else if (selectedAnswer == option3) {
+                    binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option3).setTextColor(Color.GREEN)
+                    val radioButton = binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option3)
+                    radioButton.setTypeface(null, Typeface.BOLD)
+                } else if (selectedAnswer == option4) {
+                    binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option4).setTextColor(Color.GREEN)
+                    val radioButton = binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option4)
+                    radioButton.setTypeface(null, Typeface.BOLD)
+                }
             } else {
-                // Change radio button text color to red for incorrect answers
-                binding.questionRecyclerView.getChildAt(i).findViewById<TextView>(R.id.answerTextView).setTextColor(
-                    Color.RED)
-                binding.questionRecyclerView.getChildAt(i).findViewById<TextView>(R.id.answerTextView2).text = correctAnswer
+                if (correctAnswer == option1) {
+                    binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option1).setTextColor(Color.RED)
+                    val radioButton = binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option1)
+                    radioButton.setTypeface(null, Typeface.BOLD)
+                } else if (correctAnswer == option2) {
+                    binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option2).setTextColor(Color.RED)
+                    val radioButton = binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option2)
+                    radioButton.setTypeface(null, Typeface.BOLD)
+                } else if (correctAnswer == option3) {
+                    binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option3).setTextColor(Color.RED)
+                    val radioButton = binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option3)
+                    radioButton.setTypeface(null, Typeface.BOLD)
+                } else if (correctAnswer == option4) {
+                    binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option4).setTextColor(Color.RED)
+                    val radioButton = binding.questionRecyclerView.getChildAt(i)
+                        .findViewById<RadioButton>(R.id.option4)
+                    radioButton.setTypeface(null, Typeface.BOLD)
+                }
             }
         }
         // Notify the adapter about the data change after the loop
