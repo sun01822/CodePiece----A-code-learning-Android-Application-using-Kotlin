@@ -1,8 +1,5 @@
 package com.example.codepiece.adapter
 
-// QuestionAdapter.kt
-
-import android.graphics.Color
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -17,6 +14,7 @@ class QuestionAdapter(
 ) : RecyclerView.Adapter<QuestionAdapter.QuestionViewHolder>() {
 
     private val selectedAnswers = mutableMapOf<Int, String?>()
+    private var answeredCount = 0
 
     inner class QuestionViewHolder(private val binding: QuestionLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -59,12 +57,22 @@ class QuestionAdapter(
         return selectedAnswers[position]
     }
 
+    // Function to get the answered question count
+    fun getAnsweredCount(): Int {
+        return answeredCount
+    }
+
     // Function to update the selected answer for a specific question
     private fun updateSelectedAnswer(position: Int, answer: String?) {
         selectedAnswers[position] = answer
     }
 
     private fun onOptionSelected(position: Int, answer: String) {
+        // Check if the question is not already answered
+        if (selectedAnswers[position] == null) {
+            answeredCount++
+        }
+
         // Notify the listener about the option selection
         onOptionSelectedListener.invoke(position, answer)
         // Update the selected answer for the question
