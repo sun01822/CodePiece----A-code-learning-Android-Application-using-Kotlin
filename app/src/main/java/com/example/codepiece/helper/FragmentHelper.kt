@@ -1,16 +1,10 @@
 package com.example.codepiece.helper
 
-import android.graphics.Color
 import android.os.Bundle
-import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import com.example.codepiece.R
-import com.example.codepiece.data.QuestionModel
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.codepiece.databinding.FragmentQuizBinding
 
 object FragmentHelper {
     fun getFragmentWithValue(fragment: Fragment, value: String): Fragment {
@@ -29,6 +23,16 @@ object FragmentHelper {
             transaction.addToBackStack(null)
         }
         transaction.commit()
+    }
+
+    // Function to clear the input fields
+    fun clearInputFields(binding: FragmentQuizBinding) {
+        binding.editTextQuestionUpload.text?.clear()
+        binding.editTextOption1Upload.text?.clear()
+        binding.editTextOption2Upload.text?.clear()
+        binding.editTextOption3Upload.text?.clear()
+        binding.editTextOption4Upload.text?.clear()
+        binding.editTextAnswerUpload.text?.clear()
     }
 
 }
