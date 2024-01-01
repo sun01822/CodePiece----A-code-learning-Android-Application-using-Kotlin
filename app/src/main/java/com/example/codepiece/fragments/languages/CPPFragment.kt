@@ -19,6 +19,7 @@ import com.example.codepiece.adapter.AdminQuestionAdapter
 import com.example.codepiece.adapter.QuestionAdapter
 import com.example.codepiece.data.QuestionModel
 import com.example.codepiece.databinding.FragmentQuizBinding
+import com.example.codepiece.helper.FragmentHelper.clearInputFields
 import com.google.firebase.firestore.FirebaseFirestore
 
 class CPPFragment : Fragment() {
@@ -121,7 +122,7 @@ class CPPFragment : Fragment() {
             }
     }
 
-    @SuppressLint("CutPasteId")
+    @SuppressLint("CutPasteId", "NotifyDataSetChanged")
     private fun checkAllAnswers() {
         for (i in 0 until questionList.size) {
             // Accessing a specific view (answerLayout) in the questionRecyclerView
@@ -346,7 +347,7 @@ class CPPFragment : Fragment() {
                                 Toast.makeText(requireContext(), "Question updated successfully", Toast.LENGTH_SHORT).show()
 
                                 // Clear the input fields after successful update
-                                clearInputFields()
+                                clearInputFields(binding)
 
                                 // Reset the upload button text and flags
                                 binding.buttonUpload.text = "Upload"
@@ -378,7 +379,7 @@ class CPPFragment : Fragment() {
                     Toast.makeText(requireContext(), "Question uploaded successfully", Toast.LENGTH_SHORT).show()
 
                     // Clear the input fields after successful upload
-                    clearInputFields()
+                    clearInputFields(binding)
                     // Fetch the updated data from Firestore
                     fetchQuestionsFromFirestore()
                     adminQuestionAdapter.notifyDataSetChanged()
@@ -387,16 +388,5 @@ class CPPFragment : Fragment() {
                     // Handle failure, e.g., show an error message
                 }
         }
-    }
-
-
-    private fun clearInputFields() {
-        // Clear the input fields after successful upload
-        binding.editTextQuestionUpload.text?.clear()
-        binding.editTextOption1Upload.text?.clear()
-        binding.editTextOption2Upload.text?.clear()
-        binding.editTextOption3Upload.text?.clear()
-        binding.editTextOption4Upload.text?.clear()
-        binding.editTextAnswerUpload.text?.clear()
     }
 }
