@@ -6,13 +6,13 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.codepiece.R
 import com.example.codepiece.adapter.AdminQuestionAdapter
@@ -29,6 +29,9 @@ class CPPFragment : Fragment() {
     private val questionList = mutableListOf<QuestionModel>() // Assuming you have a Question data class
     private var isQuestionAnswered = BooleanArray(questionList.size) { false }
     private var isLoggedIn: Boolean = false
+    private var isUpdatingQuestion = false
+    private var updatingPosition = -1
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,19 +46,13 @@ class CPPFragment : Fragment() {
         binding.quizLayout.visibility = if (isLoggedIn) View.GONE else View.VISIBLE
         binding.adminLayout.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
 
-
         questionAdapter = QuestionAdapter(questionList) { position, answer ->
             // Handle the selected answer, if needed
         }
 
-        adminQuestionAdapter = AdminQuestionAdapter(questionList) { position ->
-            // Handle long press
-        }
-
-        adminQuestionAdapter = AdminQuestionAdapter(questionList) { position ->
-            // Handle long press
-            showDeleteConfirmationDialog(requireContext(), position)
-        }
+        adminQuestionAdapter = AdminQuestionAdapter(questionList,
+            onLongPressListener = { position -> showDeleteConfirmationDialog(requireContext(), position) },
+            onPressListener = { position -> showEditConfirmationDialog(requireContext(), position) })
 
         questionAdapter.setOnOptionSelectedListener { position, _ ->
             // Empty listener, you can handle selected options here if needed
@@ -65,9 +62,11 @@ class CPPFragment : Fragment() {
             val allQuestionsAnswered = isQuestionAnswered.all { it }
 
             // Show submit button when answered count is the same as the total number of questions
-            binding.submitButton.visibility = if (allQuestionsAnswered && questionAdapter.getAnsweredCount() == questionList.size) View.VISIBLE else View.GONE
-
+            binding.submitButton.visibility =
+                if (allQuestionsAnswered && questionAdapter.getAnsweredCount() == questionList.size) View.VISIBLE
+                else View.GONE
         }
+
         binding.questionRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.questionRecyclerView.adapter = questionAdapter
 
@@ -75,6 +74,7 @@ class CPPFragment : Fragment() {
         binding.adminQuestionRecyclerView.adapter = adminQuestionAdapter
 
         binding.quizName.text = "C++ Quiz"
+        binding.progressBar.visibility = View.VISIBLE
 
         // Fetch questions from Firestore
         fetchQuestionsFromFirestore()
@@ -96,10 +96,14 @@ class CPPFragment : Fragment() {
         val firestore = FirebaseFirestore.getInstance()
         val collectionRef = firestore.collection("cpp_questions")
 
+        // Clear the existing questions before fetching new ones
+        questionList.clear()
+
         // Fetch 10 random questions
         collectionRef
             .get()
             .addOnSuccessListener { querySnapshot ->
+                binding.progressBar.visibility = View.GONE
                 for (document in querySnapshot.documents) {
                     val question = document.toObject(QuestionModel::class.java)
                     question?.let {
@@ -112,6 +116,7 @@ class CPPFragment : Fragment() {
                 adminQuestionAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->
+                Toast.makeText(requireContext(), "Failed to fetch questions", Toast.LENGTH_SHORT).show()
                 // Handle the failure
             }
     }
@@ -209,6 +214,22 @@ class CPPFragment : Fragment() {
             .show()
     }
 
+    private fun showEditConfirmationDialog(context: Context, position: Int) {
+        AlertDialog.Builder(context)
+            .setTitle("Edit Question")
+            .setMessage("Are you sure you want to edit this question?")
+            .setPositiveButton("Edit") { dialog, _ ->
+                updateQuestion(position)
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+
+
     @SuppressLint("NotifyDataSetChanged")
     private fun deleteQuestionFromFirebase(position: Int) {
         val firestore = FirebaseFirestore.getInstance()
@@ -261,17 +282,42 @@ class CPPFragment : Fragment() {
         }
     }
 
+    private fun updateQuestion(position: Int) {
+        // Set the flag to indicate that we are updating a question
+        isUpdatingQuestion = true
+        updatingPosition = position
+
+        // Fetch the question data
+        val question = questionList[position]
+
+        // Set the data to the EditText fields
+        binding.editTextQuestionUpload.setText(question.question)
+        binding.editTextOption1Upload.setText(question.option1)
+        binding.editTextOption2Upload.setText(question.option2)
+        binding.editTextOption3Upload.setText(question.option3)
+        binding.editTextOption4Upload.setText(question.option4)
+        binding.editTextAnswerUpload.setText(question.answer)
+
+        // Change the text of the upload button to "Update"
+        binding.buttonUpload.text = "Update"
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private fun uploadDataToFirestore() {
         val firestore = FirebaseFirestore.getInstance()
 
         // Assuming you have EditText components for question, options, and answer
-        val question =binding.editTextQuestionUpload.text.toString()
+        val question = binding.editTextQuestionUpload.text.toString()
         val option1 = binding.editTextOption1Upload.text.toString()
         val option2 = binding.editTextOption2Upload.text.toString()
         val option3 = binding.editTextOption3Upload.text.toString()
         val option4 = binding.editTextOption4Upload.text.toString()
         val answer = binding.editTextAnswerUpload.text.toString()
+
+        if(question.isEmpty() || option1.isEmpty() || option2.isEmpty() || option3.isEmpty() || option4.isEmpty() || answer.isEmpty()) {
+            Toast.makeText(requireContext(), "Please fill all the fields", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         // Create a data object
         val data = hashMapOf(
@@ -284,19 +330,65 @@ class CPPFragment : Fragment() {
         )
 
         // Replace "your_collection" with the actual name of your Firestore collection
-        firestore.collection("cpp_questions")
-            .add(data)
-            .addOnSuccessListener {
-                // Handle success, e.g., show a success message
-                // Clear the input fields if needed
-                adminQuestionAdapter.notifyDataSetChanged()
-                Toast.makeText(requireContext(), "Question uploaded successfully", Toast.LENGTH_SHORT).show()
-                clearInputFields()
-            }
-            .addOnFailureListener { exception ->
-                // Handle failure, e.g., show an error message
-            }
+        if (isUpdatingQuestion) {
+            // If updating, use the updatingPosition to get the document ID of the existing question
+            val existingQuestion = questionList[updatingPosition]
+
+            firestore.collection("cpp_questions")
+                .whereEqualTo("question", existingQuestion.question)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (!documents.isEmpty) {
+                        val document = documents.documents[0]
+                        document.reference.update(data as Map<String, Any>)
+                            .addOnSuccessListener {
+                                // Handle success, e.g., show a success message
+                                Toast.makeText(requireContext(), "Question updated successfully", Toast.LENGTH_SHORT).show()
+
+                                // Clear the input fields after successful update
+                                clearInputFields()
+
+                                // Reset the upload button text and flags
+                                binding.buttonUpload.text = "Upload"
+                                isUpdatingQuestion = false
+                                updatingPosition = -1
+                                // Fetch the updated data from Firestore
+                                fetchQuestionsFromFirestore()
+                                adminQuestionAdapter.notifyDataSetChanged()
+                            }
+                            .addOnFailureListener { exception ->
+                                // Handle failure, e.g., show an error message
+                            }
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    // Handle the failure in querying the document
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed to query document for updating",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+        } else {
+            // If not updating, add a new question
+            firestore.collection("cpp_questions")
+                .add(data)
+                .addOnSuccessListener {
+                    // Handle success, e.g., show a success message
+                    Toast.makeText(requireContext(), "Question uploaded successfully", Toast.LENGTH_SHORT).show()
+
+                    // Clear the input fields after successful upload
+                    clearInputFields()
+                    // Fetch the updated data from Firestore
+                    fetchQuestionsFromFirestore()
+                    adminQuestionAdapter.notifyDataSetChanged()
+                }
+                .addOnFailureListener { exception ->
+                    // Handle failure, e.g., show an error message
+                }
+        }
     }
+
 
     private fun clearInputFields() {
         // Clear the input fields after successful upload

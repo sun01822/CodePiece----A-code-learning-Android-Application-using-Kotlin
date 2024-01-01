@@ -9,7 +9,8 @@ import com.example.codepiece.data.QuestionModel
 
 class AdminQuestionAdapter(
     private val questionList: List<QuestionModel>,
-    private val onLongPressListener: (Int) -> Unit
+    private val onLongPressListener: (Int) -> Unit,
+    private val onPressListener: (Int) -> Unit
 ) : RecyclerView.Adapter<AdminQuestionAdapter.AdminQuestionViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdminQuestionViewHolder {
@@ -34,6 +35,10 @@ class AdminQuestionAdapter(
         holder.itemView.setOnLongClickListener {
             onLongPressListener.invoke(position)
             true
+        }
+        // Handle press
+        holder.itemView.setOnClickListener {
+            onPressListener.invoke(position)
         }
     }
 
