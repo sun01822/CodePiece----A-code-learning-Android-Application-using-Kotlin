@@ -12,6 +12,7 @@ import com.example.codepiece.adapter.AdminQuestionAdapter
 import com.example.codepiece.adapter.QuestionAdapter
 import com.example.codepiece.data.QuestionModel
 import com.example.codepiece.databinding.FragmentQuizBinding
+import com.example.codepiece.helper.FragmentHelper
 import com.example.codepiece.helper.FragmentHelper.checkAllAnswers
 import com.example.codepiece.helper.FragmentHelper.fetchQuestions
 import com.example.codepiece.helper.FragmentHelper.showDeleteConfirmationDialog
@@ -89,7 +90,8 @@ class PythonFragment : Fragment() {
             questionList,
             questionAdapter,
             adminQuestionAdapter,
-            binding.progressBar
+            binding.progressBar,
+            isLoggedIn
         )
 
         questionAdapter.setOnOptionSelectedListener { position, _ ->
@@ -106,11 +108,18 @@ class PythonFragment : Fragment() {
         }
 
         binding.submitButton.setOnClickListener {
-            checkAllAnswers(
+            val (correctCount, wrongCount) = checkAllAnswers(
                 binding,
                 questionList,
                 questionAdapter
             )
+            val quizResultDialog =
+                FragmentHelper.buildDialog(
+                    requireContext(),
+                    correctCount,
+                    wrongCount
+                )
+            quizResultDialog.show()
             binding.submitButton.visibility = View.GONE
         }
         binding.buttonUpload.setOnClickListener {
@@ -125,7 +134,6 @@ class PythonFragment : Fragment() {
                 requireContext()
             )
         }
-
         return binding.root
     }
 }

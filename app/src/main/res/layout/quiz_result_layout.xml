@@ -1,0 +1,69 @@
+<!-- res/layout/dialog_quiz_result.xml -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="250dp"
+    android:layout_gravity="center"
+    android:padding="16dp">
+
+    <!-- ImageView to show the background image (GIF) -->
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+    android:alpha="0.8" />
+
+    <!-- LinearLayout to hold the result text views -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- TextView for Result -->
+        <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Result"
+            android:gravity="center"
+            android:textColor="@color/colorAccent"
+            android:layout_marginBottom="16dp"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+        <!-- TextView for Correct Count -->
+        <TextView
+            android:id="@+id/tvCorrectCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:layout_marginTop="16dp"
+            android:text="Correct count: 0" />
+
+        <!-- TextView for Wrong Count -->
+        <TextView
+            android:id="@+id/tvWrongCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Wrong count: 0"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tvCongratulation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:text="Congratulation!!!"
+            android:layout_marginTop="16dp"
+            android:textColor="#15E11D"
+            android:layout_marginBottom="8dp"/>
+    </LinearLayout>
+
+</FrameLayout>
