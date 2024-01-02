@@ -10,9 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.RadioButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,7 +19,7 @@ import com.example.codepiece.adapter.AdminQuestionAdapter
 import com.example.codepiece.adapter.QuestionAdapter
 import com.example.codepiece.data.QuestionModel
 import com.example.codepiece.databinding.FragmentQuizBinding
-import com.example.codepiece.helper.FragmentHelper
+import com.example.codepiece.helper.FragmentHelper.clearInputFields
 import com.google.firebase.firestore.FirebaseFirestore
 
 class JavaFragment : Fragment() {
@@ -347,7 +345,7 @@ class JavaFragment : Fragment() {
                                 Toast.makeText(requireContext(), "Question updated successfully", Toast.LENGTH_SHORT).show()
 
                                 // Clear the input fields after successful update
-                                FragmentHelper.clearInputFields(binding)
+                                clearInputFields(binding)
 
                                 // Reset the upload button text and flags
                                 binding.buttonUpload.text = "Upload"
@@ -379,7 +377,7 @@ class JavaFragment : Fragment() {
                     Toast.makeText(requireContext(), "Question uploaded successfully", Toast.LENGTH_SHORT).show()
 
                     // Clear the input fields after successful upload
-                    FragmentHelper.clearInputFields(binding)
+                    clearInputFields(binding)
                     // Fetch the updated data from Firestore
                     fetchQuestionsFromFirestore()
                     adminQuestionAdapter.notifyDataSetChanged()
