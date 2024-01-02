@@ -14,10 +14,9 @@ import com.example.codepiece.data.QuestionModel
 import com.example.codepiece.databinding.FragmentQuizBinding
 import com.example.codepiece.helper.FragmentHelper.checkAllAnswers
 import com.example.codepiece.helper.FragmentHelper.fetchQuestions
-import com.example.codepiece.helper.FragmentHelper.fetchQuestionsAdmin
 import com.example.codepiece.helper.FragmentHelper.showDeleteConfirmationDialog
 import com.example.codepiece.helper.FragmentHelper.showEditConfirmationDialog
-import com.example.codepiece.helper.FragmentHelper.uploadQuestionToFirestore
+import com.example.codepiece.helper.FragmentHelper.uploadQuestion
 
 class CPPFragment : Fragment() {
     private lateinit var binding: FragmentQuizBinding
@@ -50,13 +49,28 @@ class CPPFragment : Fragment() {
         }
 
         adminQuestionAdapter = AdminQuestionAdapter(questionList,
-            onLongPressListener = { position -> showDeleteConfirmationDialog(requireContext(),questionList, adminQuestionAdapter, position) },
-            onPressListener = { position -> showEditConfirmationDialog(
-                requireContext(),
-                position,
-                questionList,
-                binding
-            ) })
+            onLongPressListener = { position ->
+                showDeleteConfirmationDialog(
+                    collectionName,
+                    requireContext(),
+                    questionList,
+                    adminQuestionAdapter,
+                    position
+                )},
+            onPressListener = { position ->
+                showEditConfirmationDialog(
+                    collectionName,
+                    position,
+                    requireContext(),
+                    questionList,
+                    questionAdapter,
+                    adminQuestionAdapter,
+                    binding,
+                    true,
+                    position
+                )
+            }
+        )
 
 
         binding.questionRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -69,29 +83,19 @@ class CPPFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
 
         // Fetch questions from Firestore
-        if(isLoggedIn) {
-            fetchQuestionsAdmin(
-                collectionName,
-                questionList,
-                questionAdapter,
-                adminQuestionAdapter,
-                binding.progressBar)
-        }else{
-            isQuestionAnswered = fetchQuestions(
-                collectionName,
-                questionList,
-                questionAdapter,
-                adminQuestionAdapter,
-                binding.progressBar
-            )
-
-        }
+        fetchQuestions(
+            collectionName,
+            questionList,
+            questionAdapter,
+            adminQuestionAdapter,
+            binding.progressBar
+        )
 
         questionAdapter.setOnOptionSelectedListener { position, _ ->
             // Empty listener, you can handle selected options here if needed
             // Mark the question as answered
+            //isQuestionAnswered[position] = true
             // Check if all questions are answered
-            //isQuestionAnswered[position] = true   -> this is not needed
             val allQuestionsAnswered = isQuestionAnswered.all { it }
 
             // Show submit button when answered count is the same as the total number of questions
@@ -101,15 +105,11 @@ class CPPFragment : Fragment() {
         }
 
         binding.submitButton.setOnClickListener {
-            checkAllAnswers(
-                binding,
-                questionList,
-                questionAdapter,
-            )
+            checkAllAnswers(binding, questionList, questionAdapter)
             binding.submitButton.visibility = View.GONE
         }
         binding.buttonUpload.setOnClickListener {
-            uploadQuestionToFirestore(
+            uploadQuestion(
                 collectionName,
                 isUpdatingQuestion,
                 updatingPosition,

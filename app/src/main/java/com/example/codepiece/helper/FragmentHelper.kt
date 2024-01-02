@@ -1,6 +1,7 @@
 package com.example.codepiece.helper
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
@@ -9,7 +10,6 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.RadioButton
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -22,20 +22,17 @@ import com.example.codepiece.databinding.FragmentQuizBinding
 import com.google.firebase.firestore.FirebaseFirestore
 
 object FragmentHelper {
-
+    // Function to get a fragment with a value
     fun getFragmentWithValue(fragment: Fragment, value: String): Fragment {
+        // Here you can pass the value to the fragment using a Bundle
         val bundle = Bundle()
         bundle.putString("VALUE_KEY", value)
         fragment.arguments = bundle
+
         return fragment
     }
-
-    fun replaceFragment(
-        fragmentManager: FragmentManager,
-        containerId: Int,
-        fragment: Fragment,
-        addToBackStack: Boolean = true
-    ) {
+    // You can add more helper functions as needed
+    fun replaceFragment(fragmentManager: FragmentManager, containerId: Int, fragment: Fragment, addToBackStack: Boolean = true) {
         val transaction: FragmentTransaction = fragmentManager.beginTransaction()
         transaction.replace(containerId, fragment)
         if (addToBackStack) {
@@ -44,8 +41,9 @@ object FragmentHelper {
         transaction.commit()
     }
 
+    // Function to fetch questions from Firebase
     @SuppressLint("NotifyDataSetChanged")
-    fun fetchQuestionsAdmin(
+    fun fetchQuestions(
         collectionName: String,
         questionList: MutableList<QuestionModel>,
         questionAdapter: RecyclerView.Adapter<*>,
@@ -67,6 +65,8 @@ object FragmentHelper {
                         questionList.add(it)
                     }
                 }
+                // Initialize isQuestionAnswered after fetching questions
+                val isQuestionAnswered = BooleanArray(questionList.size) { false }
                 questionAdapter.notifyDataSetChanged()
                 adminQuestionAdapter.notifyDataSetChanged()
             }
@@ -75,42 +75,8 @@ object FragmentHelper {
             }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun fetchQuestions(
-        collectionName: String,
-        questionList: MutableList<QuestionModel>,
-        questionAdapter: RecyclerView.Adapter<*>,
-        adminQuestionAdapter: RecyclerView.Adapter<*>,
-        progressBar: ProgressBar
-    ):  BooleanArray {
-        var isQuestionAnswered = BooleanArray(questionList.size) { false }
-        val firestore = FirebaseFirestore.getInstance()
-        val collectionRef = firestore.collection(collectionName)
-
-        questionList.clear()
-
-        collectionRef
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                progressBar.visibility = View.GONE
-                for (document in querySnapshot.documents) {
-                    val question = document.toObject(QuestionModel::class.java)
-                    question?.let {
-                        questionList.add(it)
-                    }
-                }
-                isQuestionAnswered = BooleanArray(questionList.size) { false }
-                questionAdapter.notifyDataSetChanged()
-                adminQuestionAdapter.notifyDataSetChanged()
-            }
-            .addOnFailureListener { exception ->
-                // Handle the failure
-            }
-        return isQuestionAnswered
-    }
-
-    // Added a new parameter for the boolean array
-    fun uploadQuestionToFirestore(
+    // Function to upload a question to Firebase
+    fun uploadQuestion(
         collectionName: String,
         isUpdatingQuestion: Boolean,
         updatingPosition: Int,
@@ -130,7 +96,7 @@ object FragmentHelper {
         val answer = binding.editTextAnswerUpload.text.toString()
 
         if (question.isEmpty() || option1.isEmpty() || option2.isEmpty() || option3.isEmpty() || option4.isEmpty() || answer.isEmpty()) {
-            showToast(context, "Please fill all the fields")
+            Toast.makeText(context, "Please fill all the fields", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -154,16 +120,10 @@ object FragmentHelper {
                         val document = documents.documents[0]
                         document.reference.update(data as Map<String, Any>)
                             .addOnSuccessListener {
-                                showToast(context, "Question updated successfully")
+                                Toast.makeText(context, "Question updated successfully", Toast.LENGTH_SHORT).show()
                                 clearInputFields(binding)
                                 binding.buttonUpload.text = "Upload"
-                                fetchQuestionsAdmin(
-                                    collectionName,
-                                    questionList,
-                                    questionAdapter,
-                                    adminQuestionAdapter,
-                                    binding.progressBar
-                                )
+                                fetchQuestions(collectionName, questionList, questionAdapter, adminQuestionAdapter, binding.progressBar)
                             }
                             .addOnFailureListener { exception ->
                                 // Handle failure
@@ -177,23 +137,18 @@ object FragmentHelper {
             firestore.collection(collectionName)
                 .add(data)
                 .addOnSuccessListener {
-                    showToast(context, "Question uploaded successfully")
+                    Toast.makeText(context, "Question uploaded successfully", Toast.LENGTH_SHORT).show()
                     clearInputFields(binding)
-                    fetchQuestionsAdmin(
-                        collectionName,
-                        questionList,
-                        questionAdapter,
-                        adminQuestionAdapter,
-                        binding.progressBar
-                    )
+                    fetchQuestions(collectionName, questionList, questionAdapter, adminQuestionAdapter, binding.progressBar)
                 }
                 .addOnFailureListener { exception ->
                     // Handle failure
-                    showToast(context, "Failed to upload question")
                 }
         }
     }
 
+
+    // Function to clear the input fields
     fun clearInputFields(binding: FragmentQuizBinding) {
         binding.editTextQuestionUpload.text?.clear()
         binding.editTextOption1Upload.text?.clear()
@@ -203,24 +158,9 @@ object FragmentHelper {
         binding.editTextAnswerUpload.text?.clear()
     }
 
-    fun updateQuestion(
-        position: Int,
-        questionList: MutableList<QuestionModel>,
-        binding: FragmentQuizBinding
-    ) {
-        val question = questionList[position]
-
-        binding.editTextQuestionUpload.setText(question.question)
-        binding.editTextOption1Upload.setText(question.option1)
-        binding.editTextOption2Upload.setText(question.option2)
-        binding.editTextOption3Upload.setText(question.option3)
-        binding.editTextOption4Upload.setText(question.option4)
-        binding.editTextAnswerUpload.setText(question.answer)
-
-        binding.buttonUpload.text = "Update"
-    }
-
+    // Function to delete a question from Firebase
     fun deleteQuestionFromFirebase(
+        collectionName: String,
         context: Context,
         questionList: MutableList<QuestionModel>,
         adminQuestionAdapter: AdminQuestionAdapter,
@@ -230,31 +170,53 @@ object FragmentHelper {
         val question = questionList[position].question
 
         question?.let {
-            firestore.collection("cpp_questions")
-                .whereEqualTo("question", question)
+            firestore.collection(collectionName)
+                .whereEqualTo("question", question) // Query to find the document.
                 .get()
                 .addOnSuccessListener { documents ->
                     if (!documents.isEmpty) {
                         val document = documents.documents[0]
                         document.reference.delete()
                             .addOnSuccessListener {
+                                // Document deleted successfully
+                                // Remove the question from the list
                                 questionList.removeAt(position)
                                 adminQuestionAdapter.notifyDataSetChanged()
-                                showToast(context, "Question deleted successfully")
+                                Toast.makeText(
+                                    context,
+                                    "Question deleted successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                             .addOnFailureListener { exception ->
-                                showToast(context, "Failed to delete question")
+                                // Handle the failure
+                                Toast.makeText(
+                                    context,
+                                    "Failed to delete question",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                     } else {
-                        showToast(context, "Document not found for deletion")
+                        // Handle the case where the document is not found
+                        Toast.makeText(
+                            context,
+                            "Document not found for deletion",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
                 .addOnFailureListener { exception ->
-                    showToast(context, "Failed to query document for deletion")
+                    // Handle the failure in querying the document
+                    Toast.makeText(
+                        context,
+                        "Failed to query document for deletion",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
         }
     }
 
+    // Function to check all the answers
     @SuppressLint("NotifyDataSetChanged", "CutPasteId")
     fun checkAllAnswers(
         binding: FragmentQuizBinding,
@@ -262,6 +224,11 @@ object FragmentHelper {
         questionAdapter: QuestionAdapter
     ) {
         for (i in 0 until questionList.size) {
+            // Accessing a specific view (answerLayout) in the questionRecyclerView
+            // Uncomment this line if needed
+//            binding.questionRecyclerView.getChildAt(i)
+//                .findViewById<LinearLayout>(R.id.answerLayout).visibility = View.VISIBLE
+
             val selectedAnswer = questionAdapter.getSelectedAnswer(i)
             val correctAnswer = questionList[i].answer
 
@@ -328,10 +295,13 @@ object FragmentHelper {
                 }
             }
         }
+        // Notify the adapter about the data change after the loop
         questionAdapter.notifyDataSetChanged()
     }
 
+    // Function to show the delete confirmation dialog
     fun showDeleteConfirmationDialog(
+        collectionName: String,
         context: Context,
         questionList: MutableList<QuestionModel>,
         adminQuestionAdapter: AdminQuestionAdapter,
@@ -341,7 +311,7 @@ object FragmentHelper {
             .setTitle("Delete Question")
             .setMessage("Are you sure you want to delete this question?")
             .setPositiveButton("Delete") { dialog, _ ->
-                deleteQuestionFromFirebase(context, questionList, adminQuestionAdapter, position)
+                deleteQuestionFromFirebase(collectionName,context, questionList, adminQuestionAdapter, position)
                 dialog.dismiss()
             }
             .setNegativeButton("Cancel") { dialog, _ ->
@@ -351,17 +321,77 @@ object FragmentHelper {
             .show()
     }
 
-    fun showEditConfirmationDialog(
-        context: Context,
+    // Function to update a question
+    fun updateQuestion(
+        collectionName: String,
         position: Int,
         questionList: MutableList<QuestionModel>,
-        binding: FragmentQuizBinding
+        questionAdapter: RecyclerView.Adapter<*>,
+        adminQuestionAdapter: RecyclerView.Adapter<*>,
+        binding: FragmentQuizBinding,
+        isUpdatingQuestion: Boolean,
+        updatingPosition: Int,
+        context: Context
+    ) {
+        // Fetch the question data
+        val question = questionList[position]
+
+        // Set the data to the EditText fields
+        binding.editTextQuestionUpload.setText(question.question)
+        binding.editTextOption1Upload.setText(question.option1)
+        binding.editTextOption2Upload.setText(question.option2)
+        binding.editTextOption3Upload.setText(question.option3)
+        binding.editTextOption4Upload.setText(question.option4)
+        binding.editTextAnswerUpload.setText(question.answer)
+
+
+
+        // Change the text of the upload button to "Update"
+        binding.buttonUpload.text = "Update"
+
+        binding.buttonUpload.setOnClickListener {
+            uploadQuestion(
+                collectionName,
+                isUpdatingQuestion,
+                updatingPosition,
+                questionList,
+                questionAdapter,
+                adminQuestionAdapter,
+                binding,
+                context
+            )
+        }
+    }
+
+
+
+    // Function to show the edit confirmation dialog
+    fun showEditConfirmationDialog(
+        collectionName: String,
+        position: Int,
+        context: Context,
+        questionList: MutableList<QuestionModel>,
+        questionAdapter: QuestionAdapter,
+        adminQuestionAdapter: AdminQuestionAdapter,
+        binding: FragmentQuizBinding,
+        isUpdatingQuestion: Boolean,
+        updatingPosition: Int
     ) {
         AlertDialog.Builder(context)
             .setTitle("Edit Question")
             .setMessage("Are you sure you want to edit this question?")
             .setPositiveButton("Edit") { dialog, _ ->
-                updateQuestion(position, questionList, binding)
+                updateQuestion(
+                    collectionName,
+                    position,
+                    questionList,
+                    questionAdapter,
+                    adminQuestionAdapter,
+                    binding,
+                    isUpdatingQuestion,
+                    updatingPosition,
+                    context
+                )
                 dialog.dismiss()
             }
             .setNegativeButton("Cancel") { dialog, _ ->
@@ -369,9 +399,5 @@ object FragmentHelper {
             }
             .create()
             .show()
-    }
-
-    fun showToast(context: Context, message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 }
