@@ -33,19 +33,17 @@
             android:id="@+id/quizLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:orientation="vertical"
             >
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/questionRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:clipToPadding="false"
-                android:padding="10dp"
+                android:padding="2dp"
                 android:scrollbars="vertical"
                 tools:listitem="@layout/question_layout" />
-
 
             <Button
                 android:id="@+id/submitButton"
@@ -72,7 +70,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/adminQuestionRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:clipToPadding="false"
                 android:padding="10dp"
