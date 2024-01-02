@@ -6,14 +6,18 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RadioButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.codepiece.R
 import com.example.codepiece.adapter.AdminQuestionAdapter
 import com.example.codepiece.adapter.QuestionAdapter
@@ -48,7 +52,8 @@ object FragmentHelper {
         questionList: MutableList<QuestionModel>,
         questionAdapter: RecyclerView.Adapter<*>,
         adminQuestionAdapter: RecyclerView.Adapter<*>,
-        progressBar: ProgressBar
+        progressBar: ProgressBar,
+        loggedIn: Boolean,
     ) {
         val firestore = FirebaseFirestore.getInstance()
         val collectionRef = firestore.collection(collectionName)
@@ -59,19 +64,31 @@ object FragmentHelper {
             .get()
             .addOnSuccessListener { querySnapshot ->
                 progressBar.visibility = View.GONE
+                val allQuestions = mutableListOf<QuestionModel>()
                 for (document in querySnapshot.documents) {
                     val question = document.toObject(QuestionModel::class.java)
                     question?.let {
-                        questionList.add(it)
+                        //questionList.add(it)
+                        allQuestions.add(it)
                     }
                 }
-                // Initialize isQuestionAnswered after fetching questions
-                val isQuestionAnswered = BooleanArray(questionList.size) { false }
+                // Shuffle the list to get random questions
+                allQuestions.shuffle()
+
+                // Add the first two questions to the displayed list
+                if (loggedIn) {
+                    questionList.addAll(allQuestions)
+                } else {
+                    // change the number of question to be displayed here
+                    questionList.addAll(allQuestions.take(1))
+                }
+
                 questionAdapter.notifyDataSetChanged()
                 adminQuestionAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->
                 // Handle the failure
+                showToast("Failed to fetch questions", progressBar.context)
             }
     }
 
@@ -123,7 +140,7 @@ object FragmentHelper {
                                 Toast.makeText(context, "Question updated successfully", Toast.LENGTH_SHORT).show()
                                 clearInputFields(binding)
                                 binding.buttonUpload.text = "Upload"
-                                fetchQuestions(collectionName, questionList, questionAdapter, adminQuestionAdapter, binding.progressBar)
+                                fetchQuestions(collectionName, questionList, questionAdapter, adminQuestionAdapter, binding.progressBar, true)
                             }
                             .addOnFailureListener { exception ->
                                 // Handle failure
@@ -139,7 +156,7 @@ object FragmentHelper {
                 .addOnSuccessListener {
                     Toast.makeText(context, "Question uploaded successfully", Toast.LENGTH_SHORT).show()
                     clearInputFields(binding)
-                    fetchQuestions(collectionName, questionList, questionAdapter, adminQuestionAdapter, binding.progressBar)
+                    fetchQuestions(collectionName, questionList, questionAdapter, adminQuestionAdapter, binding.progressBar, true)
                 }
                 .addOnFailureListener { exception ->
                     // Handle failure
@@ -222,82 +239,108 @@ object FragmentHelper {
         binding: FragmentQuizBinding,
         questionList: List<QuestionModel>,
         questionAdapter: QuestionAdapter
-    ) {
+    ): Pair<Int, Int> {
+        var correctCount = 0
+        var wrongCount = 0
+
         for (i in 0 until questionList.size) {
             // Accessing a specific view (answerLayout) in the questionRecyclerView
             // Uncomment this line if needed
-//            binding.questionRecyclerView.getChildAt(i)
-//                .findViewById<LinearLayout>(R.id.answerLayout).visibility = View.VISIBLE
+            // binding.questionRecyclerView.getChildAt(i)
+            //    .findViewById<LinearLayout>(R.id.answerLayout).visibility = View.VISIBLE
 
             val selectedAnswer = questionAdapter.getSelectedAnswer(i)
             val correctAnswer = questionList[i].answer
 
-            val option1 = binding.questionRecyclerView.getChildAt(i)
-                .findViewById<RadioButton>(R.id.option1).text.toString()
-            val option2 = binding.questionRecyclerView.getChildAt(i)
-                .findViewById<RadioButton>(R.id.option2).text.toString()
-            val option3 = binding.questionRecyclerView.getChildAt(i)
-                .findViewById<RadioButton>(R.id.option3).text.toString()
-            val option4 = binding.questionRecyclerView.getChildAt(i)
-                .findViewById<RadioButton>(R.id.option4).text.toString()
+            // Disable the radio buttons
+            disableRadioButtons(binding, i)
+
+//            val option1 = binding.questionRecyclerView.getChildAt(i)
+//                .findViewById<RadioButton>(R.id.option1).text.toString()
+//            val option2 = binding.questionRecyclerView.getChildAt(i)
+//                .findViewById<RadioButton>(R.id.option2).text.toString()
+//            val option3 = binding.questionRecyclerView.getChildAt(i)
+//                .findViewById<RadioButton>(R.id.option3).text.toString()
+//            val option4 = binding.questionRecyclerView.getChildAt(i)
+//                .findViewById<RadioButton>(R.id.option4).text.toString()
 
             if (selectedAnswer == correctAnswer) {
-                if (selectedAnswer == option1) {
-                    binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option1).setTextColor(Color.GREEN)
-                    val radioButton = binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option1)
-                    radioButton.setTypeface(null, Typeface.BOLD)
-                } else if (selectedAnswer == option2) {
-                    binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option2).setTextColor(Color.GREEN)
-                    val radioButton = binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option2)
-                    radioButton.setTypeface(null, Typeface.BOLD)
-                } else if (selectedAnswer == option3) {
-                    binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option3).setTextColor(Color.GREEN)
-                    val radioButton = binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option3)
-                    radioButton.setTypeface(null, Typeface.BOLD)
-                } else if (selectedAnswer == option4) {
-                    binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option4).setTextColor(Color.GREEN)
-                    val radioButton = binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option4)
-                    radioButton.setTypeface(null, Typeface.BOLD)
-                }
+                setOptionColor(binding, i, selectedAnswer.toString(), Color.GREEN)
+                correctCount++
             } else {
-                if (correctAnswer == option1) {
-                    binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option1).setTextColor(Color.RED)
-                    val radioButton = binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option1)
-                    radioButton.setTypeface(null, Typeface.BOLD)
-                } else if (correctAnswer == option2) {
-                    binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option2).setTextColor(Color.RED)
-                    val radioButton = binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option2)
-                    radioButton.setTypeface(null, Typeface.BOLD)
-                } else if (correctAnswer == option3) {
-                    binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option3).setTextColor(Color.RED)
-                    val radioButton = binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option3)
-                    radioButton.setTypeface(null, Typeface.BOLD)
-                } else if (correctAnswer == option4) {
-                    binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option4).setTextColor(Color.RED)
-                    val radioButton = binding.questionRecyclerView.getChildAt(i)
-                        .findViewById<RadioButton>(R.id.option4)
-                    radioButton.setTypeface(null, Typeface.BOLD)
-                }
+                setOptionColor(binding, i, selectedAnswer.toString(), Color.RED)
+                setOptionColor(binding, i, correctAnswer.toString(), Color.GREEN)
+                wrongCount++
             }
         }
+
         // Notify the adapter about the data change after the loop
         questionAdapter.notifyDataSetChanged()
+
+        return Pair(correctCount, wrongCount)
     }
+
+    // Helper function to disable radio buttons
+    fun disableRadioButtons(binding: FragmentQuizBinding, index: Int) {
+        binding.questionRecyclerView.getChildAt(index)
+            .findViewById<RadioButton>(R.id.option1).isEnabled = false
+        binding.questionRecyclerView.getChildAt(index)
+            .findViewById<RadioButton>(R.id.option2).isEnabled = false
+        binding.questionRecyclerView.getChildAt(index)
+            .findViewById<RadioButton>(R.id.option3).isEnabled = false
+        binding.questionRecyclerView.getChildAt(index)
+            .findViewById<RadioButton>(R.id.option4).isEnabled = false
+    }
+
+    // Helper function to set option color and typeface
+    fun setOptionColor(
+        binding: FragmentQuizBinding,
+        index: Int,
+        option: String,
+        color: Int
+    ) {
+        when (option) {
+            binding.questionRecyclerView.getChildAt(index)
+                .findViewById<RadioButton>(R.id.option1).text.toString() -> {
+                setRadioButtonColor(
+                    binding.questionRecyclerView.getChildAt(index)
+                        .findViewById(R.id.option1),
+                    color
+                )
+            }
+            binding.questionRecyclerView.getChildAt(index)
+                .findViewById<RadioButton>(R.id.option2).text.toString() -> {
+                setRadioButtonColor(
+                    binding.questionRecyclerView.getChildAt(index)
+                        .findViewById(R.id.option2),
+                    color
+                )
+            }
+            binding.questionRecyclerView.getChildAt(index)
+                .findViewById<RadioButton>(R.id.option3).text.toString() -> {
+                setRadioButtonColor(
+                    binding.questionRecyclerView.getChildAt(index)
+                        .findViewById(R.id.option3),
+                    color
+                )
+            }
+            binding.questionRecyclerView.getChildAt(index)
+                .findViewById<RadioButton>(R.id.option4).text.toString() -> {
+                setRadioButtonColor(
+                    binding.questionRecyclerView.getChildAt(index)
+                        .findViewById(R.id.option4),
+                    color
+                )
+            }
+        }
+    }
+
+    // Helper function to set radio button color and typeface
+     fun setRadioButtonColor(radioButton: RadioButton, color: Int) {
+        radioButton.setTextColor(color)
+        radioButton.setTypeface(null, Typeface.BOLD)
+    }
+
 
     // Function to show the delete confirmation dialog
     fun showDeleteConfirmationDialog(
@@ -381,6 +424,7 @@ object FragmentHelper {
             .setTitle("Edit Question")
             .setMessage("Are you sure you want to edit this question?")
             .setPositiveButton("Edit") { dialog, _ ->
+                showToast("Scroll down, question is set for editing", context)
                 updateQuestion(
                     collectionName,
                     position,
@@ -399,5 +443,40 @@ object FragmentHelper {
             }
             .create()
             .show()
+    }
+
+    fun buildDialog(context: Context, correctCount: Int, wrongCount: Int): AlertDialog {
+        val inflater = LayoutInflater.from(context)
+        val view = inflater.inflate(R.layout.quiz_result_layout, null)
+
+        val tvCorrectCount = view.findViewById<TextView>(R.id.tvCorrectCount)
+        val tvWrongCount = view.findViewById<TextView>(R.id.tvWrongCount)
+        val imageView = view.findViewById<ImageView>(R.id.backgroundImage)
+        val message = view.findViewById<TextView>(R.id.tvCongratulation)
+
+        if (correctCount > wrongCount) {
+            Glide.with(context)
+                .load(R.drawable.celebration2)
+                .into(imageView)
+            message.text = "Congratulations!"
+        } else {
+            message.text = "Better luck next time!"
+            message.setTextColor(Color.parseColor("#FF0000")) // Use Color.parseColor to convert a hex color to an integer
+        }
+
+        tvCorrectCount.text = "Correct: " +  correctCount.toString()
+        tvWrongCount.text = "Wrong: " + wrongCount.toString()
+
+        return AlertDialog.Builder(context)
+            .setView(view)
+            .setPositiveButton("Ok") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+    }
+
+    // Function to show a toast message
+    fun showToast(message: String, context: Context) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 }
