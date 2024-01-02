@@ -19,7 +19,7 @@ import com.example.codepiece.adapter.AdminQuestionAdapter
 import com.example.codepiece.adapter.QuestionAdapter
 import com.example.codepiece.data.QuestionModel
 import com.example.codepiece.databinding.FragmentQuizBinding
-import com.example.codepiece.helper.FragmentHelper
+import com.example.codepiece.helper.FragmentHelper.clearInputFields
 import com.google.firebase.firestore.FirebaseFirestore
 
 class CFragment : Fragment() {
@@ -346,7 +346,7 @@ class CFragment : Fragment() {
                                 Toast.makeText(requireContext(), "Question updated successfully", Toast.LENGTH_SHORT).show()
 
                                 // Clear the input fields after successful update
-                                FragmentHelper.clearInputFields(binding)
+                                clearInputFields(binding)
 
                                 // Reset the upload button text and flags
                                 binding.buttonUpload.text = "Upload"
@@ -378,7 +378,7 @@ class CFragment : Fragment() {
                     Toast.makeText(requireContext(), "Question uploaded successfully", Toast.LENGTH_SHORT).show()
 
                     // Clear the input fields after successful upload
-                    FragmentHelper.clearInputFields(binding)
+                    clearInputFields(binding)
                     // Fetch the updated data from Firestore
                     fetchQuestionsFromFirestore()
                     adminQuestionAdapter.notifyDataSetChanged()
