@@ -1,6 +1,6 @@
 package com.example.codepiece.adapter
 
-import android.os.Handler
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.RadioButton
@@ -10,11 +10,12 @@ import com.example.codepiece.databinding.QuestionLayoutBinding
 
 class QuestionAdapter(
     private val questionList: List<QuestionModel>,
-    private var onOptionSelectedListener: (Int, String?) -> Unit
+    private var onOptionSelectedListener: (Int, String?) -> Unit,
+    private var selectedItemsCountListener: (Int) -> Unit
 ) : RecyclerView.Adapter<QuestionAdapter.QuestionViewHolder>() {
 
     private val selectedAnswers = mutableMapOf<Int, String?>()
-    private var answeredCount = 0
+    private var selectedItemsCount = 0
 
     inner class QuestionViewHolder(private val binding: QuestionLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -57,20 +58,17 @@ class QuestionAdapter(
         return selectedAnswers[position]
     }
 
-    // Function to get the answered question count
-    fun getAnsweredCount(): Int {
-        return answeredCount
-    }
-
     // Function to update the selected answer for a specific question
     private fun updateSelectedAnswer(position: Int, answer: String?) {
         selectedAnswers[position] = answer
+        selectedItemsCountListener.invoke(selectedItemsCount)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun onOptionSelected(position: Int, answer: String) {
         // Check if the question is not already answered
         if (selectedAnswers[position] == null) {
-            answeredCount++
+            selectedItemsCount++
         }
 
         // Notify the listener about the option selection

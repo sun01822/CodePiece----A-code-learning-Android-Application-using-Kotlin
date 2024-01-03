@@ -25,7 +25,6 @@ class CPPFragment : Fragment() {
     private lateinit var questionAdapter: QuestionAdapter
     private lateinit var adminQuestionAdapter: AdminQuestionAdapter
     private val questionList = mutableListOf<QuestionModel>() // Assuming you have a Question data class
-    private var isQuestionAnswered = BooleanArray(questionList.size) { false }
     private var isLoggedIn: Boolean = false
     private var isUpdatingQuestion = false
     private var updatingPosition = -1
@@ -45,10 +44,19 @@ class CPPFragment : Fragment() {
         binding.quizLayout.visibility = if (isLoggedIn) View.GONE else View.VISIBLE
         binding.adminLayout.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
 
-        questionAdapter = QuestionAdapter(questionList) { position, answer ->
-            // Handle the selected answer, if needed
-        }
-
+        questionAdapter = QuestionAdapter(
+            questionList,
+            onOptionSelectedListener = { position, answer ->
+                // Handle the selected answer, if needed
+            },
+            selectedItemsCountListener = { selectedItemsCount ->
+                // Check if all questions are answered
+                val allQuestionsAnswered = selectedItemsCount == questionList.size
+                // Show submit button when all questions are answered
+                binding.submitButton.visibility =
+                    if (allQuestionsAnswered) View.VISIBLE else View.GONE
+            }
+        )
         adminQuestionAdapter = AdminQuestionAdapter(questionList,
             onLongPressListener = { position ->
                 showDeleteConfirmationDialog(
@@ -92,19 +100,6 @@ class CPPFragment : Fragment() {
             binding.progressBar,
             isLoggedIn
         )
-
-        questionAdapter.setOnOptionSelectedListener { position, _ ->
-            // Empty listener, you can handle selected options here if needed
-            // Mark the question as answered
-            //isQuestionAnswered[position] = true
-            // Check if all questions are answered
-            val allQuestionsAnswered = isQuestionAnswered.all { it }
-
-            // Show submit button when answered count is the same as the total number of questions
-            binding.submitButton.visibility =
-                if (allQuestionsAnswered && questionAdapter.getAnsweredCount() == questionList.size) View.VISIBLE
-                else View.GONE
-        }
 
         binding.submitButton.setOnClickListener {
             val (correctCount, wrongCount) = checkAllAnswers(
