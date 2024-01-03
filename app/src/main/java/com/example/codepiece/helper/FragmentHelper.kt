@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -35,8 +36,14 @@ object FragmentHelper {
 
         return fragment
     }
+
     // You can add more helper functions as needed
-    fun replaceFragment(fragmentManager: FragmentManager, containerId: Int, fragment: Fragment, addToBackStack: Boolean = true) {
+    fun replaceFragment(
+        fragmentManager: FragmentManager,
+        containerId: Int,
+        fragment: Fragment,
+        addToBackStack: Boolean = true
+    ) {
         val transaction: FragmentTransaction = fragmentManager.beginTransaction()
         transaction.replace(containerId, fragment)
         if (addToBackStack) {
@@ -57,14 +64,12 @@ object FragmentHelper {
     ) {
         val firestore = FirebaseFirestore.getInstance()
         val collectionRef = firestore.collection(collectionName)
-
-        questionList.clear()
-
         collectionRef
             .get()
             .addOnSuccessListener { querySnapshot ->
                 progressBar.visibility = View.GONE
                 val allQuestions = mutableListOf<QuestionModel>()
+                allQuestions.clear()
                 for (document in querySnapshot.documents) {
                     val question = document.toObject(QuestionModel::class.java)
                     question?.let {
@@ -72,19 +77,20 @@ object FragmentHelper {
                         allQuestions.add(it)
                     }
                 }
-                // Shuffle the list to get random questions
-                allQuestions.shuffle()
-
                 // Add the first two questions to the displayed list
                 if (loggedIn) {
                     questionList.addAll(allQuestions)
+                    adminQuestionAdapter.notifyDataSetChanged()
                 } else {
+                    // Change the number of questions to be displayed here
+                    val numberOfQuestionsToDisplay = 10
+                    // Shuffle the list to get random questions
+                    allQuestions.shuffle()
+                    questionList.clear()
                     // change the number of question to be displayed here
-                    questionList.addAll(allQuestions.take(1))
+                    questionList.addAll(allQuestions.take(numberOfQuestionsToDisplay))
+                    questionAdapter.notifyDataSetChanged()
                 }
-
-                questionAdapter.notifyDataSetChanged()
-                adminQuestionAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->
                 // Handle the failure
@@ -137,10 +143,21 @@ object FragmentHelper {
                         val document = documents.documents[0]
                         document.reference.update(data as Map<String, Any>)
                             .addOnSuccessListener {
-                                Toast.makeText(context, "Question updated successfully", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Question updated successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 clearInputFields(binding)
                                 binding.buttonUpload.text = "Upload"
-                                fetchQuestions(collectionName, questionList, questionAdapter, adminQuestionAdapter, binding.progressBar, true)
+                                fetchQuestions(
+                                    collectionName,
+                                    questionList,
+                                    questionAdapter,
+                                    adminQuestionAdapter,
+                                    binding.progressBar,
+                                    true
+                                )
                             }
                             .addOnFailureListener { exception ->
                                 // Handle failure
@@ -154,9 +171,17 @@ object FragmentHelper {
             firestore.collection(collectionName)
                 .add(data)
                 .addOnSuccessListener {
-                    Toast.makeText(context, "Question uploaded successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Question uploaded successfully", Toast.LENGTH_SHORT)
+                        .show()
                     clearInputFields(binding)
-                    fetchQuestions(collectionName, questionList, questionAdapter, adminQuestionAdapter, binding.progressBar, true)
+                    fetchQuestions(
+                        collectionName,
+                        questionList,
+                        questionAdapter,
+                        adminQuestionAdapter,
+                        binding.progressBar,
+                        true
+                    )
                 }
                 .addOnFailureListener { exception ->
                     // Handle failure
@@ -176,6 +201,7 @@ object FragmentHelper {
     }
 
     // Function to delete a question from Firebase
+    @SuppressLint("NotifyDataSetChanged")
     fun deleteQuestionFromFirebase(
         collectionName: String,
         context: Context,
@@ -240,107 +266,21 @@ object FragmentHelper {
         questionList: List<QuestionModel>,
         questionAdapter: QuestionAdapter
     ): Pair<Int, Int> {
+        binding.submitButton.visibility = View.GONE
         var correctCount = 0
         var wrongCount = 0
-
         for (i in 0 until questionList.size) {
-            // Accessing a specific view (answerLayout) in the questionRecyclerView
-            // Uncomment this line if needed
-            // binding.questionRecyclerView.getChildAt(i)
-            //    .findViewById<LinearLayout>(R.id.answerLayout).visibility = View.VISIBLE
-
-            val selectedAnswer = questionAdapter.getSelectedAnswer(i)
-            val correctAnswer = questionList[i].answer
-
-            // Disable the radio buttons
-            disableRadioButtons(binding, i)
-
-//            val option1 = binding.questionRecyclerView.getChildAt(i)
-//                .findViewById<RadioButton>(R.id.option1).text.toString()
-//            val option2 = binding.questionRecyclerView.getChildAt(i)
-//                .findViewById<RadioButton>(R.id.option2).text.toString()
-//            val option3 = binding.questionRecyclerView.getChildAt(i)
-//                .findViewById<RadioButton>(R.id.option3).text.toString()
-//            val option4 = binding.questionRecyclerView.getChildAt(i)
-//                .findViewById<RadioButton>(R.id.option4).text.toString()
+            val selectedAnswer = questionAdapter.getSelectedAnswer(i).toString()
+            val correctAnswer = questionList[i].answer.toString()
 
             if (selectedAnswer == correctAnswer) {
-                setOptionColor(binding, i, selectedAnswer.toString(), Color.GREEN)
                 correctCount++
             } else {
-                setOptionColor(binding, i, selectedAnswer.toString(), Color.RED)
-                setOptionColor(binding, i, correctAnswer.toString(), Color.GREEN)
                 wrongCount++
             }
         }
-
-        // Notify the adapter about the data change after the loop
-        questionAdapter.notifyDataSetChanged()
-
         return Pair(correctCount, wrongCount)
     }
-
-    // Helper function to disable radio buttons
-    fun disableRadioButtons(binding: FragmentQuizBinding, index: Int) {
-        binding.questionRecyclerView.getChildAt(index)
-            .findViewById<RadioButton>(R.id.option1).isEnabled = false
-        binding.questionRecyclerView.getChildAt(index)
-            .findViewById<RadioButton>(R.id.option2).isEnabled = false
-        binding.questionRecyclerView.getChildAt(index)
-            .findViewById<RadioButton>(R.id.option3).isEnabled = false
-        binding.questionRecyclerView.getChildAt(index)
-            .findViewById<RadioButton>(R.id.option4).isEnabled = false
-    }
-
-    // Helper function to set option color and typeface
-    fun setOptionColor(
-        binding: FragmentQuizBinding,
-        index: Int,
-        option: String,
-        color: Int
-    ) {
-        when (option) {
-            binding.questionRecyclerView.getChildAt(index)
-                .findViewById<RadioButton>(R.id.option1).text.toString() -> {
-                setRadioButtonColor(
-                    binding.questionRecyclerView.getChildAt(index)
-                        .findViewById(R.id.option1),
-                    color
-                )
-            }
-            binding.questionRecyclerView.getChildAt(index)
-                .findViewById<RadioButton>(R.id.option2).text.toString() -> {
-                setRadioButtonColor(
-                    binding.questionRecyclerView.getChildAt(index)
-                        .findViewById(R.id.option2),
-                    color
-                )
-            }
-            binding.questionRecyclerView.getChildAt(index)
-                .findViewById<RadioButton>(R.id.option3).text.toString() -> {
-                setRadioButtonColor(
-                    binding.questionRecyclerView.getChildAt(index)
-                        .findViewById(R.id.option3),
-                    color
-                )
-            }
-            binding.questionRecyclerView.getChildAt(index)
-                .findViewById<RadioButton>(R.id.option4).text.toString() -> {
-                setRadioButtonColor(
-                    binding.questionRecyclerView.getChildAt(index)
-                        .findViewById(R.id.option4),
-                    color
-                )
-            }
-        }
-    }
-
-    // Helper function to set radio button color and typeface
-     fun setRadioButtonColor(radioButton: RadioButton, color: Int) {
-        radioButton.setTextColor(color)
-        radioButton.setTypeface(null, Typeface.BOLD)
-    }
-
 
     // Function to show the delete confirmation dialog
     fun showDeleteConfirmationDialog(
@@ -354,7 +294,13 @@ object FragmentHelper {
             .setTitle("Delete Question")
             .setMessage("Are you sure you want to delete this question?")
             .setPositiveButton("Delete") { dialog, _ ->
-                deleteQuestionFromFirebase(collectionName,context, questionList, adminQuestionAdapter, position)
+                deleteQuestionFromFirebase(
+                    collectionName,
+                    context,
+                    questionList,
+                    adminQuestionAdapter,
+                    position
+                )
                 dialog.dismiss()
             }
             .setNegativeButton("Cancel") { dialog, _ ->
@@ -388,7 +334,6 @@ object FragmentHelper {
         binding.editTextAnswerUpload.setText(question.answer)
 
 
-
         // Change the text of the upload button to "Update"
         binding.buttonUpload.text = "Update"
 
@@ -405,7 +350,6 @@ object FragmentHelper {
             )
         }
     }
-
 
 
     // Function to show the edit confirmation dialog
@@ -453,8 +397,9 @@ object FragmentHelper {
         val tvWrongCount = view.findViewById<TextView>(R.id.tvWrongCount)
         val imageView = view.findViewById<ImageView>(R.id.backgroundImage)
         val message = view.findViewById<TextView>(R.id.tvCongratulation)
+        val resultParam = 7
 
-        if (correctCount > wrongCount) {
+        if (correctCount >= resultParam) {
             Glide.with(context)
                 .load(R.drawable.celebration2)
                 .into(imageView)
@@ -464,7 +409,7 @@ object FragmentHelper {
             message.setTextColor(Color.parseColor("#FF0000")) // Use Color.parseColor to convert a hex color to an integer
         }
 
-        tvCorrectCount.text = "Correct: " +  correctCount.toString()
+        tvCorrectCount.text = "Correct: " + correctCount.toString()
         tvWrongCount.text = "Wrong: " + wrongCount.toString()
 
         return AlertDialog.Builder(context)

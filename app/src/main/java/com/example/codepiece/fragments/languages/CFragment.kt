@@ -1,13 +1,21 @@
 package com.example.codepiece.fragments.languages
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.RadioButton
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.codepiece.R
 import com.example.codepiece.adapter.AdminQuestionAdapter
 import com.example.codepiece.adapter.QuestionAdapter
 import com.example.codepiece.data.QuestionModel
@@ -18,6 +26,7 @@ import com.example.codepiece.helper.FragmentHelper.fetchQuestions
 import com.example.codepiece.helper.FragmentHelper.showDeleteConfirmationDialog
 import com.example.codepiece.helper.FragmentHelper.showEditConfirmationDialog
 import com.example.codepiece.helper.FragmentHelper.uploadQuestion
+import java.util.concurrent.CountDownLatch
 
 class CFragment : Fragment() {
     private lateinit var binding: FragmentQuizBinding
@@ -25,12 +34,12 @@ class CFragment : Fragment() {
     private lateinit var questionAdapter: QuestionAdapter
     private lateinit var adminQuestionAdapter: AdminQuestionAdapter
     private val questionList = mutableListOf<QuestionModel>()
-    private var isQuestionAnswered = BooleanArray(questionList.size) { false }
     private var isLoggedIn: Boolean = false
     private var isUpdatingQuestion = false
     private var updatingPosition = -1
     private var collectionName = "c_programming_questions"
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,11 +53,22 @@ class CFragment : Fragment() {
         binding.quizLayout.visibility = if (isLoggedIn) View.GONE else View.VISIBLE
         binding.adminLayout.visibility = if (isLoggedIn) View.VISIBLE else View.GONE
 
-        questionAdapter = QuestionAdapter(questionList) { position, answer ->
-            // Handle the selected answer, if needed
-        }
+        questionAdapter = QuestionAdapter(
+            questionList,
+            onOptionSelectedListener = { position, answer ->
+                // Handle the selected answer, if needed
+            },
+            selectedItemsCountListener = { selectedItemsCount ->
+                // Check if all questions are answered
+                val allQuestionsAnswered = selectedItemsCount == questionList.size
+                // Show submit button when all questions are answered
+                binding.submitButton.visibility =
+                    if (allQuestionsAnswered) View.VISIBLE else View.GONE
+            }
+        )
 
-        adminQuestionAdapter = AdminQuestionAdapter(questionList,
+        adminQuestionAdapter = AdminQuestionAdapter(
+            questionList,
             onLongPressListener = { position ->
                 showDeleteConfirmationDialog(
                     collectionName,
@@ -70,8 +90,8 @@ class CFragment : Fragment() {
                     true,
                     position
                 )
-            })
-
+            }
+        )
 
         binding.questionRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.questionRecyclerView.adapter = questionAdapter
@@ -83,6 +103,7 @@ class CFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
 
         // Fetch questions from Firestore
+        questionList.clear()
         fetchQuestions(
             collectionName,
             questionList,
@@ -91,19 +112,6 @@ class CFragment : Fragment() {
             binding.progressBar,
             isLoggedIn
         )
-
-        questionAdapter.setOnOptionSelectedListener { position, _ ->
-            // Empty listener, you can handle selected options here if needed
-            // Mark the question as answered
-            //isQuestionAnswered[position] = true
-            // Check if all questions are answered
-            val allQuestionsAnswered = isQuestionAnswered.all { it }
-
-            // Show submit button when answered count is the same as the total number of questions
-            binding.submitButton.visibility =
-                if (allQuestionsAnswered && questionAdapter.getAnsweredCount() == questionList.size) View.VISIBLE
-                else View.GONE
-        }
 
         binding.submitButton.setOnClickListener {
             val (correctCount, wrongCount) = checkAllAnswers(
