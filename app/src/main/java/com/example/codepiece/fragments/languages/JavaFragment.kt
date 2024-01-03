@@ -107,17 +107,19 @@ class JavaFragment : Fragment() {
                 questionAdapter,
                 binding.questionRecyclerView
             )
-            val (correctCount, wrongCount) = checkAllAnswers(
-                binding,
-                questionList,
-                questionAdapter
-            )
-            val quizResultDialog =
-                FragmentHelper.buildDialog(requireContext(),
+            FragmentHelper.delayFunctionExecution(1500) {
+                val (correctCount, wrongCount) = checkAllAnswers(
+                    binding,
+                    questionList,
+                    questionAdapter
+                )
+                val quizResultDialog = FragmentHelper.buildDialog(
+                    requireContext(),
                     correctCount,
                     wrongCount
                 )
-            quizResultDialog.show()
+                quizResultDialog.show()
+            }
             binding.submitButton.visibility = View.GONE
         }
         binding.buttonUpload.setOnClickListener {
