@@ -3,19 +3,12 @@ package com.example.codepiece.fragments.languages
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.RadioButton
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.codepiece.R
 import com.example.codepiece.adapter.AdminQuestionAdapter
 import com.example.codepiece.adapter.QuestionAdapter
 import com.example.codepiece.data.QuestionModel
@@ -23,6 +16,7 @@ import com.example.codepiece.databinding.FragmentQuizBinding
 import com.example.codepiece.helper.FragmentHelper.buildDialog
 import com.example.codepiece.helper.FragmentHelper.checkAllAnswers
 import com.example.codepiece.helper.FragmentHelper.checkAnswer
+import com.example.codepiece.helper.FragmentHelper.delayFunctionExecution
 import com.example.codepiece.helper.FragmentHelper.fetchQuestions
 import com.example.codepiece.helper.FragmentHelper.showDeleteConfirmationDialog
 import com.example.codepiece.helper.FragmentHelper.showEditConfirmationDialog
@@ -119,17 +113,19 @@ class CFragment : Fragment() {
                 questionAdapter,
                 binding.questionRecyclerView
             )
-            val (correctCount, wrongCount) = checkAllAnswers(
-                binding,
-                questionList,
-                questionAdapter
-            )
-            val quizResultDialog = buildDialog(
-                requireContext(),
-                correctCount,
-                wrongCount
-            )
-            quizResultDialog.show()
+            delayFunctionExecution(1500) {
+                val (correctCount, wrongCount) = checkAllAnswers(
+                    binding,
+                    questionList,
+                    questionAdapter
+                )
+                val quizResultDialog = buildDialog(
+                    requireContext(),
+                    correctCount,
+                    wrongCount
+                )
+                quizResultDialog.show()
+            }
             binding.submitButton.visibility = View.GONE
         }
         binding.buttonUpload.setOnClickListener {

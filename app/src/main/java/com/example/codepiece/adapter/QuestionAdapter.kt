@@ -2,6 +2,7 @@ package com.example.codepiece.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import androidx.recyclerview.widget.RecyclerView
@@ -30,11 +31,13 @@ class QuestionAdapter(
 
         fun bind(question: QuestionModel) {
             // Bind the question data to the UI elements in the item layout
+//            binding.answerLayout.visibility = View.VISIBLE
             binding.questionTextView.text = question.question
             binding.option1.text = question.option1
             binding.option2.text = question.option2
             binding.option3.text = question.option3
             binding.option4.text = question.option4
+            binding.answerTextView2.text = question.answer
 
             // Update the radio button states based on selected answers
             updateRadioButton(binding.option1, question, adapterPosition)
@@ -46,6 +49,7 @@ class QuestionAdapter(
         private fun updateRadioButton(radioButton: RadioButton, question: QuestionModel, position: Int) {
             radioButton.isChecked = selectedAnswers[position] == radioButton.text.toString()
         }
+
     }
 
     // Function to set the listener for option selection
