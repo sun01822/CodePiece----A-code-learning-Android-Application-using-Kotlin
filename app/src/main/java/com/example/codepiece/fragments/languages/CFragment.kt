@@ -22,6 +22,7 @@ import com.example.codepiece.data.QuestionModel
 import com.example.codepiece.databinding.FragmentQuizBinding
 import com.example.codepiece.helper.FragmentHelper.buildDialog
 import com.example.codepiece.helper.FragmentHelper.checkAllAnswers
+import com.example.codepiece.helper.FragmentHelper.checkAnswer
 import com.example.codepiece.helper.FragmentHelper.fetchQuestions
 import com.example.codepiece.helper.FragmentHelper.showDeleteConfirmationDialog
 import com.example.codepiece.helper.FragmentHelper.showEditConfirmationDialog
@@ -103,7 +104,6 @@ class CFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
 
         // Fetch questions from Firestore
-        questionList.clear()
         fetchQuestions(
             collectionName,
             questionList,
@@ -114,6 +114,11 @@ class CFragment : Fragment() {
         )
 
         binding.submitButton.setOnClickListener {
+            checkAnswer(
+                questionList,
+                questionAdapter,
+                binding.questionRecyclerView
+            )
             val (correctCount, wrongCount) = checkAllAnswers(
                 binding,
                 questionList,

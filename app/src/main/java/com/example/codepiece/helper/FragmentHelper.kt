@@ -6,12 +6,12 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -83,7 +83,7 @@ object FragmentHelper {
                     adminQuestionAdapter.notifyDataSetChanged()
                 } else {
                     // Change the number of questions to be displayed here
-                    val numberOfQuestionsToDisplay = 10
+                    val numberOfQuestionsToDisplay = 5
                     // Shuffle the list to get random questions
                     allQuestions.shuffle()
                     questionList.clear()
@@ -259,169 +259,230 @@ object FragmentHelper {
         }
     }
 
-    // Function to check all the answers
-    @SuppressLint("NotifyDataSetChanged", "CutPasteId")
-    fun checkAllAnswers(
-        binding: FragmentQuizBinding,
+    fun checkAnswer(
         questionList: List<QuestionModel>,
-        questionAdapter: QuestionAdapter
-    ): Pair<Int, Int> {
-        binding.submitButton.visibility = View.GONE
-        var correctCount = 0
-        var wrongCount = 0
+        questionAdapter: QuestionAdapter,
+        recyclerView: RecyclerView
+    ) {
         for (i in 0 until questionList.size) {
             val selectedAnswer = questionAdapter.getSelectedAnswer(i).toString()
             val correctAnswer = questionList[i].answer.toString()
 
-            if (selectedAnswer == correctAnswer) {
-                correctCount++
-            } else {
-                wrongCount++
-            }
-        }
-        return Pair(correctCount, wrongCount)
-    }
-
-    // Function to show the delete confirmation dialog
-    fun showDeleteConfirmationDialog(
-        collectionName: String,
-        context: Context,
-        questionList: MutableList<QuestionModel>,
-        adminQuestionAdapter: AdminQuestionAdapter,
-        position: Int
-    ) {
-        AlertDialog.Builder(context)
-            .setTitle("Delete Question")
-            .setMessage("Are you sure you want to delete this question?")
-            .setPositiveButton("Delete") { dialog, _ ->
-                deleteQuestionFromFirebase(
-                    collectionName,
-                    context,
-                    questionList,
-                    adminQuestionAdapter,
-                    position
+            recyclerView.findViewHolderForAdapterPosition(i)?.itemView?.let { itemView ->
+                val options = listOf(
+                    itemView.findViewById<RadioButton>(R.id.option1),
+                    itemView.findViewById<RadioButton>(R.id.option2),
+                    itemView.findViewById<RadioButton>(R.id.option3),
+                    itemView.findViewById<RadioButton>(R.id.option4)
                 )
-                dialog.dismiss()
+
+                val correctOption = options.first { it.text.toString() == correctAnswer }
+                val selectedOption = options.first { it.text.toString() == selectedAnswer }
+
+                resetOptionColors(options)
+
+                if (selectedAnswer == correctAnswer) {
+                    setRadioButtonColor(selectedOption, Color.GREEN)
+                } else {
+                    setRadioButtonColor(selectedOption, Color.RED)
+                    setRadioButtonColor(correctOption, Color.GREEN)
+                }
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .create()
-            .show()
-    }
-
-    // Function to update a question
-    fun updateQuestion(
-        collectionName: String,
-        position: Int,
-        questionList: MutableList<QuestionModel>,
-        questionAdapter: RecyclerView.Adapter<*>,
-        adminQuestionAdapter: RecyclerView.Adapter<*>,
-        binding: FragmentQuizBinding,
-        isUpdatingQuestion: Boolean,
-        updatingPosition: Int,
-        context: Context
-    ) {
-        // Fetch the question data
-        val question = questionList[position]
-
-        // Set the data to the EditText fields
-        binding.editTextQuestionUpload.setText(question.question)
-        binding.editTextOption1Upload.setText(question.option1)
-        binding.editTextOption2Upload.setText(question.option2)
-        binding.editTextOption3Upload.setText(question.option3)
-        binding.editTextOption4Upload.setText(question.option4)
-        binding.editTextAnswerUpload.setText(question.answer)
-
-
-        // Change the text of the upload button to "Update"
-        binding.buttonUpload.text = "Update"
-
-        binding.buttonUpload.setOnClickListener {
-            uploadQuestion(
-                collectionName,
-                isUpdatingQuestion,
-                updatingPosition,
-                questionList,
-                questionAdapter,
-                adminQuestionAdapter,
-                binding,
-                context
-            )
         }
     }
 
+    private fun resetOptionColors(radioButton: List<RadioButton>) {
+        radioButton.forEach { button ->
+            button.setTextColor(Color.BLACK)
+            button.setTypeface(null, Typeface.NORMAL)
+            button.isEnabled = true
+        }
+    }
 
-    // Function to show the edit confirmation dialog
-    fun showEditConfirmationDialog(
-        collectionName: String,
-        position: Int,
-        context: Context,
-        questionList: MutableList<QuestionModel>,
-        questionAdapter: QuestionAdapter,
-        adminQuestionAdapter: AdminQuestionAdapter,
-        binding: FragmentQuizBinding,
-        isUpdatingQuestion: Boolean,
-        updatingPosition: Int
-    ) {
-        AlertDialog.Builder(context)
-            .setTitle("Edit Question")
-            .setMessage("Are you sure you want to edit this question?")
-            .setPositiveButton("Edit") { dialog, _ ->
-                showToast("Scroll down, question is set for editing", context)
-                updateQuestion(
+    private fun setRadioButtonColor(radioButton: RadioButton, color: Int) {
+        radioButton.setTextColor(color)
+        radioButton.setTypeface(null, Typeface.BOLD)
+        radioButton.isEnabled = false
+    }
+
+
+    // Function to check all the answers
+        @SuppressLint("NotifyDataSetChanged", "CutPasteId")
+        fun checkAllAnswers(
+            binding: FragmentQuizBinding,
+            questionList: List<QuestionModel>,
+            questionAdapter: QuestionAdapter,
+        ): Pair<Int, Int> {
+            binding.submitButton.visibility = View.GONE
+            var correctCount = 0
+            var wrongCount = 0
+            for (i in 0 until questionList.size) {
+                val selectedAnswer = questionAdapter.getSelectedAnswer(i).toString()
+
+                val correctAnswer = questionList[i].answer.toString()
+                if (selectedAnswer == correctAnswer) {
+                    correctCount++
+                } else {
+                    wrongCount++
+                }
+            }
+            // Notify the adapter about the data change after the loop
+            questionAdapter.notifyDataSetChanged()
+
+            return Pair(correctCount, wrongCount)
+        }
+
+        // Helper function to disable all radio buttons in a question
+        private fun disableRadioButtons(parentView: View) {
+            val radioGroup = parentView.findViewById<RadioGroup>(R.id.radio_group)
+
+            for (i in 0 until radioGroup.childCount) {
+                val radioButton = radioGroup.getChildAt(i) as RadioButton
+                radioButton.isEnabled = false
+            }
+        }
+
+        // Function to show the delete confirmation dialog
+        fun showDeleteConfirmationDialog(
+            collectionName: String,
+            context: Context,
+            questionList: MutableList<QuestionModel>,
+            adminQuestionAdapter: AdminQuestionAdapter,
+            position: Int
+        ) {
+            AlertDialog.Builder(context)
+                .setTitle("Delete Question")
+                .setMessage("Are you sure you want to delete this question?")
+                .setPositiveButton("Delete") { dialog, _ ->
+                    deleteQuestionFromFirebase(
+                        collectionName,
+                        context,
+                        questionList,
+                        adminQuestionAdapter,
+                        position
+                    )
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
+        }
+
+        // Function to update a question
+        fun updateQuestion(
+            collectionName: String,
+            position: Int,
+            questionList: MutableList<QuestionModel>,
+            questionAdapter: RecyclerView.Adapter<*>,
+            adminQuestionAdapter: RecyclerView.Adapter<*>,
+            binding: FragmentQuizBinding,
+            isUpdatingQuestion: Boolean,
+            updatingPosition: Int,
+            context: Context
+        ) {
+            // Fetch the question data
+            val question = questionList[position]
+
+            // Set the data to the EditText fields
+            binding.editTextQuestionUpload.setText(question.question)
+            binding.editTextOption1Upload.setText(question.option1)
+            binding.editTextOption2Upload.setText(question.option2)
+            binding.editTextOption3Upload.setText(question.option3)
+            binding.editTextOption4Upload.setText(question.option4)
+            binding.editTextAnswerUpload.setText(question.answer)
+
+
+            // Change the text of the upload button to "Update"
+            binding.buttonUpload.text = "Update"
+
+            binding.buttonUpload.setOnClickListener {
+                uploadQuestion(
                     collectionName,
-                    position,
+                    isUpdatingQuestion,
+                    updatingPosition,
                     questionList,
                     questionAdapter,
                     adminQuestionAdapter,
                     binding,
-                    isUpdatingQuestion,
-                    updatingPosition,
                     context
                 )
-                dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .create()
-            .show()
-    }
-
-    fun buildDialog(context: Context, correctCount: Int, wrongCount: Int): AlertDialog {
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.quiz_result_layout, null)
-
-        val tvCorrectCount = view.findViewById<TextView>(R.id.tvCorrectCount)
-        val tvWrongCount = view.findViewById<TextView>(R.id.tvWrongCount)
-        val imageView = view.findViewById<ImageView>(R.id.backgroundImage)
-        val message = view.findViewById<TextView>(R.id.tvCongratulation)
-        val resultParam = 7
-
-        if (correctCount >= resultParam) {
-            Glide.with(context)
-                .load(R.drawable.celebration2)
-                .into(imageView)
-            message.text = "Congratulations!"
-        } else {
-            message.text = "Better luck next time!"
-            message.setTextColor(Color.parseColor("#FF0000")) // Use Color.parseColor to convert a hex color to an integer
         }
 
-        tvCorrectCount.text = "Correct: " + correctCount.toString()
-        tvWrongCount.text = "Wrong: " + wrongCount.toString()
 
-        return AlertDialog.Builder(context)
-            .setView(view)
-            .setPositiveButton("Ok") { dialog, _ ->
-                dialog.dismiss()
+        // Function to show the edit confirmation dialog
+        fun showEditConfirmationDialog(
+            collectionName: String,
+            position: Int,
+            context: Context,
+            questionList: MutableList<QuestionModel>,
+            questionAdapter: QuestionAdapter,
+            adminQuestionAdapter: AdminQuestionAdapter,
+            binding: FragmentQuizBinding,
+            isUpdatingQuestion: Boolean,
+            updatingPosition: Int
+        ) {
+            AlertDialog.Builder(context)
+                .setTitle("Edit Question")
+                .setMessage("Are you sure you want to edit this question?")
+                .setPositiveButton("Edit") { dialog, _ ->
+                    showToast("Scroll down, question is set for editing", context)
+                    updateQuestion(
+                        collectionName,
+                        position,
+                        questionList,
+                        questionAdapter,
+                        adminQuestionAdapter,
+                        binding,
+                        isUpdatingQuestion,
+                        updatingPosition,
+                        context
+                    )
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
+        }
+
+        @SuppressLint("SetTextI18n")
+        fun buildDialog(context: Context, correctCount: Int, wrongCount: Int): AlertDialog {
+            val inflater = LayoutInflater.from(context)
+            val view = inflater.inflate(R.layout.quiz_result_layout, null)
+
+            val tvCorrectCount = view.findViewById<TextView>(R.id.tvCorrectCount)
+            val tvWrongCount = view.findViewById<TextView>(R.id.tvWrongCount)
+            val imageView = view.findViewById<ImageView>(R.id.backgroundImage)
+            val message = view.findViewById<TextView>(R.id.tvCongratulation)
+            val resultParam = 3
+
+            if (correctCount >= resultParam) {
+                Glide.with(context)
+                    .load(R.drawable.celebration2)
+                    .into(imageView)
+                message.text = "Congratulations!"
+            } else {
+                message.text = "Better luck next time!"
+                message.setTextColor(Color.parseColor("#FF0000")) // Use Color.parseColor to convert a hex color to an integer
             }
-            .create()
-    }
 
-    // Function to show a toast message
-    fun showToast(message: String, context: Context) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            tvCorrectCount.text = "Correct: " + correctCount.toString()
+            tvWrongCount.text = "Wrong: " + wrongCount.toString()
+
+            return AlertDialog.Builder(context)
+                .setView(view)
+                .setPositiveButton("Ok") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+        }
+
+        // Function to show a toast message
+        fun showToast(message: String, context: Context) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
     }
-}

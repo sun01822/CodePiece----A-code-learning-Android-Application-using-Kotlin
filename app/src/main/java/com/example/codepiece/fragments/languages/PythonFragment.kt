@@ -103,6 +103,11 @@ class PythonFragment : Fragment() {
         )
 
         binding.submitButton.setOnClickListener {
+            FragmentHelper.checkAnswer(
+                questionList,
+                questionAdapter,
+                binding.questionRecyclerView
+            )
             val (correctCount, wrongCount) = checkAllAnswers(
                 binding,
                 questionList,
