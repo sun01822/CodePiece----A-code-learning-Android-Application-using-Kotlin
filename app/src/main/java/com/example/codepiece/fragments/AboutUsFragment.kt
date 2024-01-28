@@ -24,9 +24,9 @@ class AboutUsFragment : Fragment() {
         binding = FragmentAboutUsBinding.inflate(inflater, container, false)
 
         // Add team member data to the list
-        teamMembers.add(TeamMember(R.drawable.rahat, "Al Shafiullah", "Developer"))
-        teamMembers.add(TeamMember(R.drawable.shams, "Shams Khan Sun", "Developer"))
-        teamMembers.add(TeamMember(R.drawable.antora, "Anika Tabassum Antora", "Designer"))
+        teamMembers.add(TeamMember(R.drawable.profile, "MD. Shariar Hossain Sun", "System Designer & Developer",
+            "I graduated with a Bachelor's degree in Computer Science and Engineering from Varendra University. By this time, I am trying to build up my skills to build up the best career. I am interested in essential learning and experience.\n" +
+                    "As a Computer Science student, I want to know more about programming languages and solve real-life problems. In the future, I will start a new company to develop software applications."))
         // Add more team members as needed
 
         // Initialize RecyclerView

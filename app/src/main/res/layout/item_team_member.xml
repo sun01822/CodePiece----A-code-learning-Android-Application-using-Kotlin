@@ -20,8 +20,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Name"
+        android:textColor="@color/black"
         android:textStyle="bold"
-        android:textSize="18sp"
+        android:textSize="24sp"
         android:layout_marginTop="8dp" />
 
     <TextView
@@ -30,6 +31,17 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Details"
-        android:textSize="14sp"
+        android:textSize="15sp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="25dp"/>
+
+    <TextView
+        android:id="@+id/textDetails2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="About Developer"
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:justificationMode="inter_word"
         android:layout_marginTop="4dp" />
 </LinearLayout>

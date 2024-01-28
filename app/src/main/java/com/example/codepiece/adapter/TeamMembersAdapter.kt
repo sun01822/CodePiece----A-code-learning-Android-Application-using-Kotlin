@@ -28,6 +28,7 @@ class TeamMembersAdapter(private val teamMembers: List<TeamMember>) :
             binding.imageView.setImageResource(teamMember.imageResId)
             binding.textName.text = teamMember.name
             binding.textDetails.text = teamMember.details
+            binding.textDetails2.text = teamMember.details2
         }
     }
 }
