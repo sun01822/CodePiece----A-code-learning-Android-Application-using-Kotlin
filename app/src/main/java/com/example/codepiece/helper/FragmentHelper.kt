@@ -85,8 +85,10 @@ object FragmentHelper {
                     questionList.addAll(allQuestions)
                     adminQuestionAdapter.notifyDataSetChanged()
                 } else {
+
                     // Change the number of questions to be displayed here
-                    val numberOfQuestionsToDisplay = 10
+                    val numberOfQuestionsToDisplay = 2
+
                     // Shuffle the list to get random questions
                     allQuestions.shuffle()
                     questionList.clear()
@@ -269,6 +271,7 @@ object FragmentHelper {
     ) {
         for (i in 0 until questionList.size) {
              recyclerView.findViewHolderForAdapterPosition(i)?.itemView?.let{itemView->
+                 disableRadioButtons(itemView)
                  itemView.findViewById<LinearLayout>(R.id.answerLayout).visibility = View.VISIBLE
                  val selectedAnswer = questionAdapter.getSelectedAnswer(i).toString()
                  val correctAnswer = questionList[i].answer.toString()
@@ -471,7 +474,7 @@ object FragmentHelper {
         val tvWrongCount = view.findViewById<TextView>(R.id.tvWrongCount)
         val imageView = view.findViewById<ImageView>(R.id.backgroundImage)
         val message = view.findViewById<TextView>(R.id.tvCongratulation)
-        val resultParam = 7
+        val resultParam = 1
 
         if (correctCount >= resultParam) {
             Glide.with(context)
@@ -505,5 +508,4 @@ object FragmentHelper {
             action.invoke()
         }, delayMillis)
     }
-
 }
