@@ -6,9 +6,6 @@
     <!-- Check mark icon (adjust the padding and size as needed) -->
     <item
         android:drawable="@drawable/ic_check"
-        android:gravity="right"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:paddingRight="20dp"
+        android:gravity="end|center_vertical"
         />
 </layer-list>

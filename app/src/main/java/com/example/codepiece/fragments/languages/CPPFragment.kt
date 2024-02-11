@@ -102,16 +102,12 @@ class CPPFragment : Fragment() {
         )
 
         binding.submitButton.setOnClickListener {
-            FragmentHelper.checkAnswer(
-                showList,
-                questionAdapter,
-                binding.questionRecyclerView
-            )
-            FragmentHelper.delayFunctionExecution(1500) {
+            FragmentHelper.delayFunctionExecution(1000) {
                 val (correctCount, wrongCount) = checkAllAnswers(
                     binding,
                     showList,
-                    questionAdapter
+                    questionAdapter,
+                    binding.questionRecyclerView
                 )
                 val quizResultDialog = FragmentHelper.buildDialog(
                     requireContext(),
