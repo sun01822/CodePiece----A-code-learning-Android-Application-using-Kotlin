@@ -9,4 +9,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="colorAccent">#2196F3</color> <!-- Customize the color as desired -->
     <color name="grey">#D3D3D3</color>
+
+    <!-- Define colors for checked state background, unchecked state background, and check icon -->
+    <color name="checked_color">#2196F3</color> <!-- Green color for checked state -->
+    <color name="unchecked_color">#E0E0E0</color> <!-- Light gray color for unchecked state -->
+    <color name="check_icon_color">#FFFFFF</color> <!-- White color for check icon -->
 </resources>

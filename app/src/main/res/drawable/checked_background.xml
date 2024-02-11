@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/checked_background.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background for checked state -->
+    <item android:drawable="@drawable/checked_shape" />
+    <!-- Check mark icon (adjust the padding and size as needed) -->
+    <item
+        android:drawable="@drawable/ic_check"
+        android:gravity="right"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingRight="20dp"
+        />
+</layer-list>
