@@ -15,13 +15,11 @@ import com.example.codepiece.data.QuestionModel
 import com.example.codepiece.databinding.FragmentQuizBinding
 import com.example.codepiece.helper.FragmentHelper.buildDialog
 import com.example.codepiece.helper.FragmentHelper.checkAllAnswers
-import com.example.codepiece.helper.FragmentHelper.checkAnswer
 import com.example.codepiece.helper.FragmentHelper.delayFunctionExecution
 import com.example.codepiece.helper.FragmentHelper.fetchQuestions
 import com.example.codepiece.helper.FragmentHelper.showDeleteConfirmationDialog
 import com.example.codepiece.helper.FragmentHelper.showEditConfirmationDialog
 import com.example.codepiece.helper.FragmentHelper.uploadQuestion
-import java.util.concurrent.CountDownLatch
 
 class CFragment : Fragment() {
     private lateinit var binding: FragmentQuizBinding
@@ -108,16 +106,12 @@ class CFragment : Fragment() {
         )
 
         binding.submitButton.setOnClickListener {
-            checkAnswer(
-                showList,
-                questionAdapter,
-                binding.questionRecyclerView
-            )
-            delayFunctionExecution(1500) {
+            delayFunctionExecution(1000) {
                 val (correctCount, wrongCount) = checkAllAnswers(
                     binding,
                     showList,
-                    questionAdapter
+                    questionAdapter,
+                    binding.questionRecyclerView
                 )
                 val quizResultDialog = buildDialog(
                     requireContext(),

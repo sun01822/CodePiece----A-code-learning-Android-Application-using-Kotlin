@@ -14,4 +14,7 @@
     <color name="checked_color">#2196F3</color> <!-- Green color for checked state -->
     <color name="unchecked_color">#E0E0E0</color> <!-- Light gray color for unchecked state -->
     <color name="check_icon_color">#FFFFFF</color> <!-- White color for check icon -->
+    <color name="correctColor">#00FF00</color>
+    <color name="incorrectColor">#FF0000</color>
+
 </resources>

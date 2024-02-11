@@ -8,6 +8,7 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -265,48 +266,48 @@ object FragmentHelper {
         }
     }
 
-    fun checkAnswer(
-        questionList: List<QuestionModel>,
-        questionAdapter: QuestionAdapter,
-        recyclerView: RecyclerView
-    ) {
-        for (i in 0 until questionList.size) {
-            recyclerView.findViewHolderForAdapterPosition(i)?.itemView?.let{itemView->
-                disableRadioButtons(itemView)
-                itemView.findViewById<LinearLayout>(R.id.answerLayout).visibility = View.VISIBLE
-                val selectedAnswer = questionAdapter.getSelectedAnswer(i).toString()
-                val correctAnswer = questionList[i].answer.toString()
-                if(selectedAnswer == correctAnswer) {
-                    itemView.findViewById<TextView>(R.id.answerTextView).setTextColor(Color.GREEN)
-                }else{
-                    itemView.findViewById<TextView>(R.id.answerTextView).setTextColor(Color.RED)
-                }
-            }
-//            val selectedAnswer = questionAdapter.getSelectedAnswer(i).toString()
-//            val correctAnswer = questionList[i].answer.toString()
-//
+//    fun checkAnswer(
+//        questionList: List<QuestionModel>,
+//        recyclerView: RecyclerView
+//    ) {
+//        for (i in 0 until questionList.size) {
 //            recyclerView.findViewHolderForAdapterPosition(i)?.itemView?.let { itemView ->
-//                val options = listOf(
-//                    itemView.findViewById<RadioButton>(R.id.option1),
-//                    itemView.findViewById<RadioButton>(R.id.option2),
-//                    itemView.findViewById<RadioButton>(R.id.option3),
-//                    itemView.findViewById<RadioButton>(R.id.option4)
-//                )
-//
-//                val correctOption = options.first { it.text.toString() == correctAnswer }
-//                val selectedOption = options.first { it.text.toString() == selectedAnswer }
-//
-//                resetOptionColors(options)
-//
-//                if (selectedAnswer == correctAnswer) {
-//                    setRadioButtonColor(selectedOption, Color.GREEN)
-//                } else {
-//                    setRadioButtonColor(selectedOption, Color.RED)
-//                    setRadioButtonColor(correctOption, Color.GREEN)
-//                }
+//                itemView.findViewById<LinearLayout>(R.id.answerLayout).visibility = View.VISIBLE
+//                disableRadioButtons(itemView)
 //            }
-        }
-    }
+////                val selectedAnswer = questionAdapter.getSelectedAnswer(i).toString()
+////                val correctAnswer = questionList[i].answer.toString()
+////                if(selectedAnswer == correctAnswer) {
+////                    itemView.findViewById<TextView>(R.id.answerTextView).setTextColor(Color.GREEN)
+////                }else{
+////                    itemView.findViewById<TextView>(R.id.answerTextView).setTextColor(Color.RED)
+////                }
+////            }
+////            val selectedAnswer = questionAdapter.getSelectedAnswer(i).toString()
+////            val correctAnswer = questionList[i].answer.toString()
+////
+////            recyclerView.findViewHolderForAdapterPosition(i)?.itemView?.let { itemView ->
+////                val options = listOf(
+////                    itemView.findViewById<RadioButton>(R.id.option1),
+////                    itemView.findViewById<RadioButton>(R.id.option2),
+////                    itemView.findViewById<RadioButton>(R.id.option3),
+////                    itemView.findViewById<RadioButton>(R.id.option4)
+////                )
+////
+////                val correctOption = options.first { it.text.toString() == correctAnswer }
+////                val selectedOption = options.first { it.text.toString() == selectedAnswer }
+////
+////                resetOptionColors(options)
+////
+////                if (selectedAnswer == correctAnswer) {
+////                    setRadioButtonColor(selectedOption, Color.GREEN)
+////                } else {
+////                    setRadioButtonColor(selectedOption, Color.RED)
+////                    setRadioButtonColor(correctOption, Color.GREEN)
+////                }
+////            }
+//        }
+//    }
 
     private fun resetOptionColors(radioButton: List<RadioButton>) {
         radioButton.forEach { button ->
@@ -329,15 +330,24 @@ object FragmentHelper {
         binding: FragmentQuizBinding,
         questionList: List<QuestionModel>,
         questionAdapter: QuestionAdapter,
+        recyclerView : RecyclerView
     ): Pair<Int, Int> {
         binding.submitButton.visibility = View.GONE
         var correctCount = 0
         var wrongCount = 0
         for (i in 0 until questionList.size) {
+            recyclerView.findViewHolderForAdapterPosition(i)?.itemView?.let { itemView ->
+                //itemView.findViewById<LinearLayout>(R.id.parentLayout)?.findViewById<LinearLayout>(R.id.answerLayout)?.visibility = View.VISIBLE
+                val answerLayout = itemView.findViewById<LinearLayout>(R.id.parentLayout)?.findViewById<LinearLayout>(R.id.answerLayout)
+                Log.d("Visibility", "Before: ${answerLayout?.visibility}")
+                answerLayout?.visibility = View.VISIBLE
+                Log.d("Visibility", "After: ${answerLayout?.visibility}")
+                disableRadioButtons(itemView)
+            }
             val selectedAnswer = questionAdapter.getSelectedAnswer(i).toString()
-
             val correctAnswer = questionList[i].answer.toString()
             if (selectedAnswer == correctAnswer) {
+
                 correctCount++
             } else {
                 wrongCount++
