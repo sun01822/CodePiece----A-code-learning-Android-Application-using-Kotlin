@@ -64,7 +64,7 @@ object FragmentHelper {
         adminQuestionAdapter: RecyclerView.Adapter<*>,
         progressBar: ProgressBar,
         loggedIn: Boolean,
-    ) {
+    ) : List<QuestionModel>   {
         val firestore = FirebaseFirestore.getInstance()
         val collectionRef = firestore.collection(collectionName)
         collectionRef
@@ -87,7 +87,7 @@ object FragmentHelper {
                 } else {
 
                     // Change the number of questions to be displayed here
-                    val numberOfQuestionsToDisplay = 2
+                    val numberOfQuestionsToDisplay = 5
 
                     // Shuffle the list to get random questions
                     allQuestions.shuffle()
@@ -101,6 +101,7 @@ object FragmentHelper {
                 // Handle the failure
                 showToast("Failed to fetch questions", progressBar.context)
             }
+        return questionList
     }
 
     // Function to upload a question to Firebase
@@ -270,17 +271,17 @@ object FragmentHelper {
         recyclerView: RecyclerView
     ) {
         for (i in 0 until questionList.size) {
-             recyclerView.findViewHolderForAdapterPosition(i)?.itemView?.let{itemView->
-                 disableRadioButtons(itemView)
-                 itemView.findViewById<LinearLayout>(R.id.answerLayout).visibility = View.VISIBLE
-                 val selectedAnswer = questionAdapter.getSelectedAnswer(i).toString()
-                 val correctAnswer = questionList[i].answer.toString()
-                 if(selectedAnswer == correctAnswer) {
-                     itemView.findViewById<TextView>(R.id.answerTextView).setTextColor(Color.GREEN)
-                 }else{
-                        itemView.findViewById<TextView>(R.id.answerTextView).setTextColor(Color.RED)
-                 }
-             }
+            recyclerView.findViewHolderForAdapterPosition(i)?.itemView?.let{itemView->
+                disableRadioButtons(itemView)
+                itemView.findViewById<LinearLayout>(R.id.answerLayout).visibility = View.VISIBLE
+                val selectedAnswer = questionAdapter.getSelectedAnswer(i).toString()
+                val correctAnswer = questionList[i].answer.toString()
+                if(selectedAnswer == correctAnswer) {
+                    itemView.findViewById<TextView>(R.id.answerTextView).setTextColor(Color.GREEN)
+                }else{
+                    itemView.findViewById<TextView>(R.id.answerTextView).setTextColor(Color.RED)
+                }
+            }
 //            val selectedAnswer = questionAdapter.getSelectedAnswer(i).toString()
 //            val correctAnswer = questionList[i].answer.toString()
 //
@@ -474,7 +475,7 @@ object FragmentHelper {
         val tvWrongCount = view.findViewById<TextView>(R.id.tvWrongCount)
         val imageView = view.findViewById<ImageView>(R.id.backgroundImage)
         val message = view.findViewById<TextView>(R.id.tvCongratulation)
-        val resultParam = 1
+        val resultParam = 3
 
         if (correctCount >= resultParam) {
             Glide.with(context)

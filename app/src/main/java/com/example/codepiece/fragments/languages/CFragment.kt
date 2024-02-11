@@ -98,7 +98,7 @@ class CFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
 
         // Fetch questions from Firestore
-        fetchQuestions(
+        val showList = fetchQuestions(
             collectionName,
             questionList,
             questionAdapter,
@@ -109,14 +109,14 @@ class CFragment : Fragment() {
 
         binding.submitButton.setOnClickListener {
             checkAnswer(
-                questionList,
+                showList,
                 questionAdapter,
                 binding.questionRecyclerView
             )
             delayFunctionExecution(1500) {
                 val (correctCount, wrongCount) = checkAllAnswers(
                     binding,
-                    questionList,
+                    showList,
                     questionAdapter
                 )
                 val quizResultDialog = buildDialog(
