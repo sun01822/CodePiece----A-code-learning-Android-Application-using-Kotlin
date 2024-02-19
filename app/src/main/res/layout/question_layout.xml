@@ -38,7 +38,8 @@
                 android:background="@drawable/radio_button_background"
                 android:buttonTint="@android:color/transparent"
                 android:text="Option 1"
-                android:textColor="#181717" />
+                android:textStyle="bold"
+                android:textColor="@drawable/radio_button_text_color" />
 
             <!-- RadioButton 2 -->
             <RadioButton
@@ -49,7 +50,8 @@
                 android:background="@drawable/radio_button_background"
                 android:buttonTint="@android:color/transparent"
                 android:text="Option 2"
-                android:textColor="#181717" />
+                android:textStyle="bold"
+                android:textColor="@drawable/radio_button_text_color" />
 
             <!-- RadioButton 3 -->
             <RadioButton
@@ -60,7 +62,8 @@
                 android:background="@drawable/radio_button_background"
                 android:buttonTint="@android:color/transparent"
                 android:text="Option 3"
-                android:textColor="#181717" />
+                android:textStyle="bold"
+                android:textColor="@drawable/radio_button_text_color" />
 
             <!-- RadioButton 4 -->
             <RadioButton
@@ -71,7 +74,8 @@
                 android:background="@drawable/radio_button_background"
                 android:buttonTint="@android:color/transparent"
                 android:text="Option 4"
-                android:textColor="#181717" />
+                android:textStyle="bold"
+                android:textColor="@drawable/radio_button_text_color" />
         </RadioGroup>
 
         <LinearLayout
