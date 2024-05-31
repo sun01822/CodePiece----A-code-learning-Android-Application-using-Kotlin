@@ -22,6 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter your code here"
+            android:textColorHint="@color/grey"
             android:minLines="10"
             android:gravity="top"
             android:padding="15dp"
@@ -33,6 +34,7 @@
             android:id="@+id/inputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColorHint="@color/grey"
             android:hint="Enter input (optional)"
             android:minLines="2"
             android:gravity="top"
@@ -57,6 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Response will appear here"
+            android:textColor="@color/black"
             android:textSize="18sp"
             android:layout_marginTop="40dp" />
 
